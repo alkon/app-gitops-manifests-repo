@@ -1,0 +1,11 @@
+# app-gitops-manifests-repo/platform-apps/thanos-receiver/values.yaml
+queryFrontend:
+  enabled: false
+
+receive:
+  enabled: true
+  service:
+    type: ClusterIP
+    ports:
+      remote: 19291
+      grpc: 10901
