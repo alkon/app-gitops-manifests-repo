@@ -1,4 +1,6 @@
 # app-gitops-manifests-repo/platform-apps/thanos-receiver/values.yaml
+pullSecrets: []
+
 global:
   imagePullSecrets: [] # Explicitly define this as an empty list
 
@@ -34,9 +36,9 @@ ruler:
 
 volumePermissions:
   enabled: false # Set to false if you don't need this init container
+  imagePullSecrets: []
   image:
     registry: docker.io
     repository: bitnami/kubectl
     tag: 1.29.3-debian-11-r2
     pullPolicy: IfNotPresent
-  imagePullSecrets: []
