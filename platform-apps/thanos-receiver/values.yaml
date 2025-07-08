@@ -13,3 +13,5 @@ receive:
 storegateway:
   ingress:
     enabled: false
+    grpc:
+      enabled: false
