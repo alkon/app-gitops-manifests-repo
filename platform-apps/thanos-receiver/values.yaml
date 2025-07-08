@@ -1,4 +1,5 @@
 # app-gitops-manifests-repo/platform-apps/thanos-receiver/values.yaml
+
 queryFrontend:
   enabled: false
 
@@ -9,6 +10,8 @@ receive:
     ports:
       remote: 19291
       grpc: 10901
+  ingress:
+    enabled: false # Even if 'receive' is enabled, its ingress is not
 
 storegateway:
   ingress:
@@ -17,6 +20,6 @@ storegateway:
       enabled: false
 
 ruler:
-  enabled: false # Explicitly disable ruler component
+  enabled: false
   ingress:
     enabled: false
