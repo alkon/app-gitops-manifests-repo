@@ -15,3 +15,8 @@ storegateway:
     enabled: false
     grpc:
       enabled: false
+
+ruler:
+  enabled: false # Explicitly disable ruler component
+  ingress:
+    enabled: false
