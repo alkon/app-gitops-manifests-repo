@@ -1,4 +1,6 @@
 # app-gitops-manifests-repo/platform-apps/thanos-receiver/values.yaml
+global:
+  imagePullSecrets: [] # Explicitly define this as an empty list
 
 queryFrontend:
   enabled: false
