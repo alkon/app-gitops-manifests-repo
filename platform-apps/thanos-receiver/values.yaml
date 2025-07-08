@@ -11,7 +11,9 @@ receive:
       remote: 19291
       grpc: 10901
   ingress:
-    enabled: false # Even if 'receive' is enabled, its ingress is not
+    enabled: false
+  autoscaling:
+    enabled: false
 
 storegateway:
   ingress:
