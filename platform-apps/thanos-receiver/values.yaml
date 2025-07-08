@@ -14,6 +14,10 @@ receive:
     enabled: false
   autoscaling:
     enabled: false
+  containerPorts: # These are the ports the container directly exposes
+    grpc: 10901
+    http: 10902 # Common to have an HTTP port as well
+    remote: 19291 # Matches your remote write port
 
 storegateway:
   ingress:
