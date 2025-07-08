@@ -29,3 +29,12 @@ ruler:
   enabled: false
   ingress:
     enabled: false
+
+volumePermissions:
+  enabled: false # Set to false if you don't need this init container
+  image:
+    registry: docker.io
+    repository: bitnami/kubectl
+    tag: 1.29.3-debian-11-r2
+    pullPolicy: IfNotPresent
+  imagePullSecrets: []
