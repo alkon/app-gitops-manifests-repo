@@ -9,3 +9,7 @@ receive:
     ports:
       remote: 19291
       grpc: 10901
+
+storegateway:
+  ingress:
+    enabled: false
