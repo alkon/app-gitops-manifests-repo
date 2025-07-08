@@ -1,8 +1,8 @@
 # kubernetes-gitops-manifests/platform-apps/otel-collector/values.yaml
 mode: deployment
 image:
-  repository: otel/opentelemetry-collector-contrib
-  tag: 0.128.0 # This matches the tag from your .tpl file
+  repository: "otel/opentelemetry-collector-contrib"
+  tag: "0.128.0"
 
 config:
   receivers:

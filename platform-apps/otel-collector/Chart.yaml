@@ -1,14 +1,13 @@
-# kubernetes-gitops-manifests/platform-apps/otel-collector/Chart.yaml
 apiVersion: v2
-name: otel-collector     # A unique name for your application's chart
-version: 0.1.0           # Initial version for your GitOps-managed config
-appVersion: 0.128.0      # The version of the Otel Collector image
+name: otel-collector # (Consistent with ArgoCD app_name)
+version: 0.1.0           # Your chart's version
+appVersion: "0.128.0"    # <--- CORRECTED appVersion based on your 'helm search repo'
 description: OpenTelemetry Collector managed by ArgoCD
 type: application
 home: https://opentelemetry.io/
 sources:
   - https://github.com/open-telemetry/opentelemetry-helm-charts
 dependencies:
-  - name: opentelemetry-collector # This must match the upstream chart's name
-    version: "0.127.1"           # <-- The EXACT version you currently deploy
+  - name: opentelemetry-collector
+    version: "0.127.1"
     repository: "https://open-telemetry.github.io/opentelemetry-helm-charts"
