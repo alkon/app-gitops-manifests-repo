@@ -23,12 +23,10 @@ image:
   pullPolicy: IfNotPresent
   pullSecrets: []
 objstoreConfig: "" # <-- IMPORTANT: You MUST fill this with your object storage configuration (e.g., S3, GCS, Azure Blob Storage config)
-# OR provide an existing secret name here:
-# existingObjstoreSecret: "your-objstore-secret-name"
-indexCacheConfig: ""
-bucketCacheConfig: ""
 existingObjstoreSecret: ""
 existingObjstoreSecretItems: []
+indexCacheConfig: ""
+bucketCacheConfig: ""
 httpConfig: ""
 existingHttpConfigSecret: ""
 https:
@@ -46,7 +44,7 @@ https:
 auth:
   basicAuthUsers: {}
 query:
-  enabled: false # Disabled for Receiver-only
+  enabled: false
   logLevel: info
   logFormat: logfmt
   replicaLabel: [replica]
@@ -252,7 +250,7 @@ query:
       path: /
       pathType: ImplementationSpecific
 queryFrontend:
-  enabled: false # Disabled for Receiver-only
+  enabled: false
   logLevel: info
   logFormat: logfmt
   config: ""
@@ -395,7 +393,7 @@ queryFrontend:
     path: /
     pathType: ImplementationSpecific
 bucketweb:
-  enabled: false # Disabled for Receiver-only
+  enabled: false
   logLevel: info
   logFormat: logfmt
   refresh: 30m
@@ -537,7 +535,7 @@ bucketweb:
     path: /
     pathType: ImplementationSpecific
 receive:
-  enabled: true # Enabled for Receiver-only
+  enabled: true
   logLevel: info
   logFormat: logfmt
   replicaCount: 1
@@ -717,7 +715,7 @@ receive:
     path: /
     pathType: ImplementationSpecific
 storegateway:
-  enabled: false # Disabled for Receiver-only
+  enabled: false
   logLevel: info
   logFormat: logfmt
   replicaLabel: [replica]
@@ -904,8 +902,23 @@ storegateway:
     apiVersion: ""
     path: /
     pathType: ImplementationSpecific
+    grpc:
+      enabled: false
+      hostname: thanos-grpc.local
+      secretName: ""
+      ingressClassName: ""
+      annotations: {}
+      extraHosts: []
+      extraTls: []
+      secrets: []
+      extraRules: []
+      tls: false
+      selfSigned: false
+      apiVersion: ""
+      path: /
+      pathType: ImplementationSpecific
 compact:
-  enabled: false # Disabled for Receiver-only
+  enabled: false
   logLevel: info
   logFormat: logfmt
   extraEnvVars: []
@@ -1031,7 +1044,7 @@ compact:
     minAvailable: ""
     maxUnavailable: ""
 ruler:
-  enabled: false # Disabled for Receiver-only
+  enabled: false
   logLevel: info
   logFormat: logfmt
   replicaLabel: [replica]
@@ -1220,7 +1233,7 @@ ruler:
     path: /
     pathType: ImplementationSpecific
 sidecar:
-  enabled: false # Disabled for Receiver-only
+  enabled: false
   logLevel: info
   logFormat: logfmt
   queryPort: 10901
