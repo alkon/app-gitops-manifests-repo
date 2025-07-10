@@ -1,0 +1,15 @@
+main: # Corresponds to alias: main in Chart.yaml
+  manager:
+    image:
+      repository: "ghcr.io/open-telemetry/opentelemetry-operator/opentelemetry-operator"
+      tag: "0.126.0"
+  admissionWebhooks:
+    certManager:
+      enabled: true
+
+
+
+
+
+
+

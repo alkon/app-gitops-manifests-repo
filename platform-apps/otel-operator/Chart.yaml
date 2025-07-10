@@ -1,0 +1,14 @@
+apiVersion: v2
+name: otel-operator
+version: 0.1.0  # The version of your wrapper chart
+appVersion: "0.126.0" # The app's version
+description: OpenTelemetry Operator managed by ArgoCD
+type: application
+home: https://opentelemetry.io/
+sources:
+  - https://github.com/open-telemetry/opentelemetry-helm-charts
+dependencies:
+  - name: opentelemetry-operator
+    version: "0.90.4" # The chart's version
+    repository: "https://open-telemetry.github.io/opentelemetry-helm-charts"
+    alias: main # Use an alias for easier value referencing
