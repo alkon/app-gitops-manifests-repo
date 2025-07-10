@@ -1,0 +1,29 @@
+main:  # Corresponds to the 'alias: main' in Chart.yaml
+  adminUser: "admin"
+  adminPassword: "admin" # <--- WARNING: Default password stored in plain text in Git. Not recommended for production!
+
+  # Other Grafana configurations
+#  service:
+#    type: ClusterIP
+#    port: 80
+#    targetPort: 3000
+#
+#  persistence:
+#    enabled: true
+#    type: pvc
+#    accessModes:
+#      - ReadWriteOnce
+#    size: 10Gi
+#    storageClassName: standard
+
+  # Datasources configuration
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: Prometheus
+          type: prometheus
+          url: "http://thanos-query-query.thanos-ns.svc.cluster.local:9090" # <--- Static URL here
+          isDefault: true
+          access: proxy
+          editable: true

@@ -1,0 +1,16 @@
+apiVersion: v2
+name: grafana-app
+version: 0.1.0
+appVersion: "12.0.2"
+description: Grafana app managed by ArgoCD
+type: application
+
+home: https://grafana.com/
+sources:
+  - https://github.com/grafana/helm-charts
+
+dependencies:
+  - name: grafana # Subchart name (corresponds to the official Helm chart name)
+    version: "9.2.10"
+    repository: "https://grafana.github.io/helm-charts"
+    alias: main # Alias to refer the subchart's values
