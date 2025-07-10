@@ -1,0 +1,16 @@
+apiVersion: v2
+name: cert-manager-app
+description: A Helm chart for deploying cert-manager managed by ArgoCD
+
+type: application
+version: 0.1.0 # Version of your wrapper chart
+appVersion: "v1.18.1" # The desired version of cert-manager application
+
+home: https://cert-manager.io/
+sources:
+  - https://github.com/cert-manager/cert-manager
+dependencies:
+  - name: cert-manager
+    version: "v1.18.1"
+    repository: "https://charts.jetstack.io"
+    alias: main

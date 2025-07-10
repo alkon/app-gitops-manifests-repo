@@ -1,0 +1,2 @@
+main: # Corresponds to alias: main in Chart.yaml
+  installCRDs: true
