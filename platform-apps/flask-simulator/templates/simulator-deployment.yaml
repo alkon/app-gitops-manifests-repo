@@ -27,8 +27,7 @@ spec:
               while true; do
               {{- range .Values.simulator.endpoints }}
                 echo "Calling endpoint: {{ .path }}"
-                curl --max-time {{ $.Values.simulator.curl_timeout_seconds }}
-                  -s http://flask-app:5000{{ .path }} || echo "Failed: {{ .path }}";
+                curl -s --max-time {{ $.Values.simulator.curl_timeout_seconds }} http://flask-app:5000{{ .path }} || echo "Failed: {{ .path }}";
               {{- end }}
                 sleep $SLEEP_INTERVAL;
               done
