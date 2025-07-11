@@ -1,0 +1,31 @@
+{{- if .Values.simulator.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-simulator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flask-simulator
+  template:
+    metadata:
+      labels:
+        app: flask-simulator
+    spec:
+      containers:
+        - name: curl
+          image: curlimages/curl:latest
+          env:
+            - name: SLEEP_INTERVAL
+              value: "{{ .Values.simulator.sleep_interval_seconds }}"
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              while true; do
+              {{- range .Values.simulator.endpoints }}
+                curl -s http://flask-app.flask-app-ns.svc.cluster.local:5000{{ .path }} || true;
+              {{- end }}
+                sleep $SLEEP_INTERVAL;
+              done
+{{- end }}
