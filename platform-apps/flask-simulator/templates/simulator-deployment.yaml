@@ -21,15 +21,13 @@ spec:
           env:
             - name: SLEEP_INTERVAL
               value: "{{ .Values.simulator.sleep_interval_seconds }}"
-            - name: CURL_TIMEOUT
-              value: "{{ .Values.simulator.curl_timeout }}"
           command: ["/bin/sh", "-c"]
           args:
             - |
               while true; do
               {{- range .Values.simulator.endpoints }}
                 echo "Calling endpoint: {{ .path }}"
-                curl --max-time $CURL_TIMEOUT -s http://flask-app:5000{{ .path }} || echo "Failed: {{ .path }}";
+                curl --max-time {{ .Values.simulator.curl_timeout }} -s http://flask-app:5000{{ .path }} || echo "Failed: {{ .path }}";
               {{- end }}
                 sleep $SLEEP_INTERVAL;
               done
