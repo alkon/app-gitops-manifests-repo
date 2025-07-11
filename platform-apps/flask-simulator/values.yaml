@@ -1,7 +1,8 @@
-enabled: true
-#interval: "*/1 * * * *"
-sleep_interval_seconds: 15
-endpoints:
-  - path: /health
-  - path: /hello
-  - path: /error
+simulator:
+  enabled: true
+  #interval: "*/1 * * * *"
+  sleep_interval_seconds: 15
+  endpoints:
+    - path: /health
+    - path: /hello
+    - path: /error
