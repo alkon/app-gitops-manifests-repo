@@ -13,6 +13,7 @@ spec:
 
   python:
     volumeClaimTemplate: {}
+    image: "ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-python:0.54b1"
     env:
       # Environment variables for the injected Python agent
       - name: OTEL_PYTHON_AUTOLOAD_ENABLED
