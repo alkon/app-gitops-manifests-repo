@@ -3,6 +3,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: flask-simulator
+  labels:
+    app: flask-simulator
 spec:
   replicas: 1
   selector:
@@ -19,12 +21,15 @@ spec:
           env:
             - name: SLEEP_INTERVAL
               value: "{{ .Values.simulator.sleep_interval_seconds }}"
+            - name: CURL_TIMEOUT
+              value: "{{ .Values.simulator.curl_timeout }}"
           command: ["/bin/sh", "-c"]
           args:
             - |
               while true; do
               {{- range .Values.simulator.endpoints }}
-                curl -s http://flask-app.flask-app-ns.svc.cluster.local:5000{{ .path }} || true;
+                echo "Calling endpoint: {{ .path }}"
+                curl --max-time $CURL_TIMEOUT -s http://flask-app:5000{{ .path }} || echo "Failed: {{ .path }}";
               {{- end }}
                 sleep $SLEEP_INTERVAL;
               done

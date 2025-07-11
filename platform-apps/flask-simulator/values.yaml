@@ -2,6 +2,7 @@ simulator:
   enabled: true
   #interval: "*/1 * * * *"
   sleep_interval_seconds: 15
+  curl_timeout_seconds: 3
   endpoints:
     - path: /health
     - path: /hello
