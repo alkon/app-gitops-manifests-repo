@@ -1,6 +1,49 @@
 # Existing top-level config stays as is...
 
 tempo:
+
+  resourcesPreset: "medium"
+
+  # Option 2: Manual resources (if preset doesn't work)
+  ingester:
+    resources:
+      requests:
+        memory: "1.5Gi"
+        cpu: "250m"
+      limits:
+        memory: "2Gi"
+        cpu: "500m"
+
+  distributor:
+    resources:
+      requests:
+        memory: "512Mi"
+        cpu: "100m"
+      limits:
+        memory: "1Gi"
+        cpu: "200m"
+
+  # Override the global container resources
+#  containerResources:
+#    requests:
+#      memory: 1.5Gi
+#      cpu: 250m
+#    limits:
+#      memory: 2Gi
+#      cpu: 500m
+#
+#  # Here we add resource requests and limits for the ingester container (to prevent OOM):
+#  ingester:
+#    enabled: true
+#    resources:
+#      requests:
+#        memory: 1.5Gi
+#        cpu: 250m
+#      limits:
+#        memory: 2Gi
+#        cpu: 500m
+
+
   config:
     server:
       http_listen_port: 3100  # internal HTTP port
@@ -42,26 +85,6 @@ tempo:
     query_frontend:
       search:
         enabled: true
-
-  # Override the global container resources
-  containerResources:
-    requests:
-      memory: 1.5Gi
-      cpu: 250m
-    limits:
-      memory: 2Gi
-      cpu: 500m
-
-  # Here we add resource requests and limits for the ingester container (to prevent OOM):
-  ingester:
-    enabled: true
-    resources:
-      requests:
-        memory: 1.5Gi
-        cpu: 250m
-      limits:
-        memory: 2Gi
-        cpu: 500m
 
 # The rest unchanged:
 
