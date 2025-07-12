@@ -11,6 +11,11 @@ main:
     storage:
       backend: filesystem
 
+      bucketNames:
+        chunks: "chunks"
+        index: "index"
+        wal: "wal"
+
     persistence:
       enabled: true
       size: 10Gi
