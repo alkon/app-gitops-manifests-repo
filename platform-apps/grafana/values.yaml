@@ -27,3 +27,9 @@ main:  # Corresponds to the 'alias: main' in Chart.yaml
           isDefault: true
           access: proxy
           editable: true
+        - name: Tempo
+          type: tempo
+          access: proxy
+          url: http://tempo-app-grafana-tempo-query-frontend.monitoring.svc.cluster.local:3200
+          isDefault: false
+          editable: true
