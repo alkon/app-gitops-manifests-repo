@@ -1,0 +1,129 @@
+# Dummy Grafana Agent configuration
+# This agent exists only to satisfy Loki chart dependencies
+# It doesn't actually collect any data or consume resources
+
+grafana-agent:
+  enabled: true
+
+  # Agent configuration - minimal and inactive
+  agent:
+    mode: 'static'
+
+    # Minimal static configuration that does nothing
+    configMap:
+      create: true
+      content: |
+        server:
+          log_level: info
+          http_listen_port: 12345
+        
+        # Empty integrations - no data collection
+        integrations: {}
+        
+        # Empty metrics config - no metrics scraped
+        metrics:
+          configs: []
+        
+        # Empty logs config - no logs collected
+        logs:
+          configs: []
+
+    # Security context
+    securityContext:
+      runAsUser: 65534  # nobody user
+      runAsGroup: 65534
+      runAsNonRoot: true
+      readOnlyRootFilesystem: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+
+    # Resource limits - minimal since it's a dummy
+    resources:
+      limits:
+        cpu: 10m
+        memory: 32Mi
+      requests:
+        cpu: 5m
+        memory: 16Mi
+
+  # Controller configuration - set to 0 replicas (no actual pods)
+  controller:
+    type: 'deployment'
+    replicas: 0  # KEY: No actual pods will be created
+
+    # Pod security context
+    podSecurityContext:
+      runAsUser: 65534
+      runAsGroup: 65534
+      fsGroup: 65534
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+    # Pod annotations
+    podAnnotations:
+      description: "Dummy Grafana Agent for Loki compatibility"
+      purpose: "chart-dependency-satisfaction"
+
+  # Service configuration - minimal
+  service:
+    enabled: false  # No service needed since no pods run
+
+  # ServiceMonitor - disabled
+  serviceMonitor:
+    enabled: false
+
+  # Don't create CRDs
+  crds:
+    create: false
+
+  # Ingress - disabled
+  ingress:
+    enabled: false
+
+  # Tests - disabled
+  test:
+    enabled: false
+
+  # RBAC - minimal permissions
+  rbac:
+    create: true
+    pspEnabled: false
+
+  serviceAccount:
+    create: true
+    name: "grafana-agent-dummy"
+    annotations:
+      description: "Dummy service account for Grafana Agent compatibility"
+
+  # Node selector, tolerations, affinity - not needed since replicas = 0
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+  # Image configuration (won't be used since replicas = 0)
+  image:
+    registry: docker.io
+    repository: grafana/agent
+    tag: "v0.42.0"
+    pullPolicy: IfNotPresent
+
+  # Environment variables - none needed
+  env: []
+
+  # Volumes - none needed for dummy
+  volumes: []
+  volumeMounts: []
+
+  # Persistent volumes - disabled
+  persistence:
+    enabled: false
+
+  # Monitoring and observability - all disabled
+  metrics:
+    enabled: false
+
+  # Extra manifests - none
+  extraManifests: []

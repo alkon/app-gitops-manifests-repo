@@ -1,0 +1,15 @@
+apiVersion: v2
+name: grafana-agent-app
+description: Grafana Agent app managed by ArgoCD
+type: application
+version: 0.1.0
+appVersion: "0.42.0"
+
+home: https://grafana.com/
+sources:
+  - https://github.com/grafana/helm-charts
+
+dependencies:
+  - name: grafana-agent
+    version: "0.42.0"
+    repository: "https://grafana.github.io/helm-charts"
