@@ -1,6 +1,6 @@
 apiVersion: v2
 name: fluent-bit-wrapper
-description: GitOps-managed wrapper for Fluent Bit
+description: GitOps wrapper for Fluent Bit
 type: application
 version: 0.1.0
 appVersion: "4.0.3"
@@ -8,5 +8,4 @@ appVersion: "4.0.3"
 dependencies:
   - name: fluent-bit
     version: 0.50.0
-    repository: https://grafana.github.io/helm-charts
-    alias: main
+    repository: https://fluent.github.io/helm-charts
