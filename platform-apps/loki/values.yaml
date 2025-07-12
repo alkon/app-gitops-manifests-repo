@@ -1,7 +1,24 @@
 main:
   loki:
+    singleBinary:
+      replicas: 1
+      podSecurityContext:
+        fsGroup: 10001
+      securityContext:
+        runAsUser: 10001
+        runAsGroup: 10001
+
+    storage:
+      backend: filesystem
+
+    persistence:
+      enabled: true
+      size: 10Gi
+      storageClassName: local-path
+
     auth_enabled: true
-    commonConfig:
+
+    common:
       path_prefix: /var/loki
       replication_factor: 1
 
@@ -9,11 +26,11 @@ main:
       grpc_listen_port: 9095
       http_listen_port: 3100
 
-    memberlistConfig:
+    memberlist:
       join_members:
         - loki-memberlist
 
-    schemaConfig:
+    schema_config:
       configs:
         - from: "2020-10-24"
           store: boltdb-shipper
@@ -36,4 +53,13 @@ main:
       reject_old_samples: true
       reject_old_samples_max_age: 168h
       split_queries_by_interval: 15m
+
+  compactor:
+    storage:
+      type: filesystem
+
+  ruler:
+    storage:
+      type: filesystem
+
 
