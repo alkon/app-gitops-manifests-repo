@@ -57,30 +57,44 @@ loki:
     reject_old_samples_max_age: 168h
     split_queries_by_interval: 15m
 
-compactor:
-  storage:
-    type: filesystem
+  compactor:
+    storage:
+      type: filesystem
 
-ruler:
-  storage:
-    type: filesystem
+  ruler:
+    storage:
+      type: filesystem
 
-monitoring:
-  selfMonitoring:
+  monitoring:
     enabled: false
     grafanaAgent:
-      installOperator: false
-      enabled: false  # <-- important extra line
-  serviceMonitor:
-    enabled: false
-  rules:
-    enabled: false
-  dashboards:
-    enabled: false
-  lokiCanary:
-    enabled: false  # disables loki-canary side workload
-  lokiCanaryConfig:
-    enabled: false
+      enabled: false
+    serviceMonitor:
+      enabled: false
+    rules:
+      enabled: false
+    lokiCanary:
+      enabled: false
+
+
+#monitoring:
+#  selfMonitoring:
+#    enabled: false
+#    grafanaAgent:
+#      installOperator: false
+#      enabled: false  # <-- important extra line
+#  serviceMonitor:
+#    enabled: false
+#  rules:
+#    enabled: false
+#  dashboards:
+#    enabled: false
+#  lokiCanary:
+#    enabled: false  # disables loki-canary side workload
+#  lokiCanaryConfig:
+#    enabled: false
+
+
 
 # Explicit top-level disabling of agent CRDs and workloads if present in chart
 grafana-agent-operator:
