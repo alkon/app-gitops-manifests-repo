@@ -3,10 +3,10 @@ name: loki-wrapper
 description: GitOps-managed wrapper for Grafana Loki
 type: application
 version: 0.1.0
-appVersion: "2.9.6"
+appVersion: "3.5.0"
 
 dependencies:
   - name: loki
-    version: 5.47.2
+    version: 6.31.0
     repository: https://grafana.github.io/helm-charts
     alias: main
