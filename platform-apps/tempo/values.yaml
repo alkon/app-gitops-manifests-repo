@@ -1,6 +1,6 @@
 # Existing top-level config stays as is...
 
-tempo:
+grafana-tempo:
 
   resourcesPreset: "medium"
 
