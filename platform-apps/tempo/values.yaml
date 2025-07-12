@@ -45,6 +45,7 @@ tempo:
 
   # Here we add resource requests and limits for the ingester container (to prevent OOM):
   ingester:
+    enabled: true
     resources:
       requests:
         memory: 1.5Gi
