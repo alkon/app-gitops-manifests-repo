@@ -6,6 +6,7 @@ tempo:
 
   # Option 2: Manual resources (if preset doesn't work)
   ingester:
+    enabled: true
     resources:
       requests:
         memory: "1.5Gi"
@@ -15,6 +16,7 @@ tempo:
         cpu: "500m"
 
   distributor:
+    enabled: true
     resources:
       requests:
         memory: "512Mi"
