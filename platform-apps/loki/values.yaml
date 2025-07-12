@@ -68,6 +68,12 @@ ruler:
 monitoring:
   selfMonitoring:
     enabled: false
-  grafanaAgent:
+    grafanaAgent:
+      installOperator: false
+  serviceMonitor:
     enabled: false
-    installOperator: false
+  rules:
+    enabled: false
+  dashboards:
+    enabled: false
+
