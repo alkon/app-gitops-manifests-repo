@@ -9,95 +9,58 @@ loki:
 
   storage:
     backend: filesystem
+    bucketNames:
+      chunks: "chunks"
+      index: "index"
+      wal: "wal"
 
   persistence:
     enabled: true
     size: 10Gi
     storageClassName: local-path
 
-  config: |
-    auth_enabled: true
-    
-    common:
-      path_prefix: /var/loki
-      replication_factor: 1
-    
-    server:
-      grpc_listen_port: 9095
-      http_listen_port: 3100
-    
-    memberlist:
-      join_members:
-        - loki-memberlist
-    
-    schema_config:
-      configs:
-        - from: "2020-10-24"
-          store: boltdb-shipper
-          object_store: filesystem
-          schema: v11
-          index:
-            prefix: index_
-            period: 24h
-    
-    storage_config:
-      boltdb_shipper:
-        active_index_directory: /var/loki/index
-        cache_location: /var/loki/boltdb-cache
-        shared_store: filesystem
-      filesystem:
-        directory: /var/loki/chunks
-    
-    limits_config:
-      max_entries_limit_per_query: 5000
-      reject_old_samples: true
-      reject_old_samples_max_age: 168h
-      split_queries_by_interval: 15m
-      
-    # Query range configuration
-    query_range:
-      align_queries_with_step: true
-      cache_results: true
-      max_retries: 5
-      split_queries_by_interval: 15m
-      
-    # Compactor configuration
-    compactor:
-      working_directory: /var/loki/compactor
-      shared_store: filesystem
-      compaction_interval: 10m
-      retention_enabled: true
-      retention_delete_delay: 2h
-      retention_delete_worker_count: 150
-      delete_request_store: filesystem
-      
-    # Runtime configuration
-    runtime_config:
-      file: /etc/loki/runtime-config/runtime-config.yaml
+  auth_enabled: true
 
-# Compactor storage configuration
+  commonConfig:
+    path_prefix: /var/loki
+    replication_factor: 1
+
+  server:
+    grpc_listen_port: 9095
+    http_listen_port: 3100
+
+  memberlistConfig:
+    join_members:
+      - loki-memberlist
+
+  schemaConfig:
+    configs:
+      - from: "2020-10-24"
+        store: boltdb-shipper
+        object_store: filesystem
+        schema: v11
+        index:
+          prefix: index_
+          period: 24h
+
+  storageConfig:
+    boltdb_shipper:
+      active_index_directory: /var/loki/index
+      cache_location: /var/loki/boltdb-cache
+      shared_store: filesystem
+    filesystem:
+      directory: /var/loki/chunks
+
+  limits_config:
+    max_entries_limit_per_query: 5000
+    reject_old_samples: true
+    reject_old_samples_max_age: 168h
+    split_queries_by_interval: 15m
+
 compactor:
   storage:
     type: filesystem
 
-# Ruler storage configuration
 ruler:
   storage:
     type: filesystem
-  enabled: true
-
-# Disable monitoring components
-monitoring:
-  enabled: false
-
-# Disable test pods
-test:
-  enabled: false
-
-# Disable gateway (not needed for single binary)
-gateway:
-  enabled: false
-
-# Global configuration
-global:
-  clusterDomain: cluster.local
