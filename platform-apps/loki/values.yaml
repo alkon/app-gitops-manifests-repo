@@ -1,0 +1,20 @@
+main:
+  loki:
+    auth_enabled: false
+    storage:
+      type: filesystem
+
+  singleBinary:
+    replicas: 1
+
+  service:
+    type: ClusterIP
+    port: 3100
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
