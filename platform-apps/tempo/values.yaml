@@ -11,6 +11,15 @@ tempo:
             grpc:
             http:
 
+  # Explicitly expose port 4317!
+  distributor:
+    service:
+      enabled: true
+      ports:
+        - name: otlp-grpc
+          port: 4317
+          targetPort: 4317
+
     ingester:
       trace_idle_period: 10s
       max_block_duration: 5m
