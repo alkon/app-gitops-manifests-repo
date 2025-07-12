@@ -1,5 +1,4 @@
-# Enables Tempo in single binary mode, suitable for dev/local tracing
-mode: "tempo"
+# Existing top-level config stays as is...
 
 tempo:
   config:
@@ -15,6 +14,7 @@ tempo:
     ingester:
       trace_idle_period: 10s
       max_block_duration: 5m
+      # NOTE: This block is config for the ingester process itself, not resources
 
     compactor:
       compaction:
@@ -24,7 +24,7 @@ tempo:
       trace:
         backend: "local"
         local:
-          path: "/bitnami/grafana-tempo/data"  # in-memory compatible for local/dev
+          path: "/bitnami/grafana-tempo/data"  # local dev storage
 
     querier:
       frontend_worker:
@@ -34,11 +34,21 @@ tempo:
       search:
         enabled: true
 
-# Disable persistence for pure in-memory storage
+# Here we add resource requests and limits for the ingester container (to prevent OOM):
+ingester:
+  resources:
+    requests:
+      memory: 1.5Gi
+      cpu: 250m
+    limits:
+      memory: 2Gi
+      cpu: 500m
+
+# The rest unchanged:
+
 persistence:
   enabled: false
 
-# Enable service so Grafana can reach Tempo via DNS
 service:
   type: ClusterIP
   ports:
@@ -52,11 +62,9 @@ service:
       port: 4318
       targetPort: 4318
 
-# Optional: expose metrics if needed
 metrics:
   enabled: false
 
-# Optional: disable alerting/complicated components for minimal setup
 alertmanager:
   enabled: false
 grafana:
