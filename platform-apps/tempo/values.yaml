@@ -34,6 +34,15 @@ tempo:
       search:
         enabled: true
 
+  # Override the global container resources
+  containerResources:
+    requests:
+      memory: 1.5Gi
+      cpu: 250m
+    limits:
+      memory: 2Gi
+      cpu: 500m
+
   # Here we add resource requests and limits for the ingester container (to prevent OOM):
   ingester:
     resources:
