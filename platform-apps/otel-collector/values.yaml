@@ -52,3 +52,10 @@ opentelemetry-collector: # <--- ADD THIS TOP-LEVEL KEY, AND INDENT EVERYTHING BE
           exporters:
             - debug
             - prometheusremotewrite
+        traces:
+          receivers:
+            - otlp
+          processors:
+            - batch
+          exporters:
+            - debug
