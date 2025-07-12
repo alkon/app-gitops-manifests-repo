@@ -4,9 +4,28 @@ main:
   singleBinary:
     replicas: 1
 
+  simpleScalable:
+    gateway:
+      replicas: 0
+    ingester:
+      replicas: 0
+    distributor:
+      replicas: 0
+    querier:
+      replicas: 0
+    queryFrontend:
+      replicas: 0
+    compactor:
+      replicas: 0
+    ruler:
+      replicas: 0
+    indexGateway:
+      replicas: 0
+    bloomGateway:
+      replicas: 0
+
   loki:
     auth_enabled: false
-
     storage:
       type: filesystem
       filesystem:
@@ -27,7 +46,7 @@ main:
       shared_store: filesystem
 
     limits_config:
-      retention_period: 168h  # 7 days
+      retention_period: 168h
 
   persistence:
     enabled: true
