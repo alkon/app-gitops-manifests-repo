@@ -1,33 +1,20 @@
 main:
   loki:
-    singleBinary:
-      replicas: 1
-      podSecurityContext:
-        fsGroup: 10001
-      securityContext:
-        runAsUser: 10001
-        runAsGroup: 10001
+    auth_enabled: true
+    commonConfig:
+      path_prefix: /var/loki
+      replication_factor: 1
 
-    storage:
-      backend: filesystem
-    persistence:
-      enabled: true
-      size: 10Gi
-      storageClassName: local-path
+    server:
+      grpc_listen_port: 9095
+      http_listen_port: 3100
 
-    config: |
-      auth_enabled: true
-      common:
-        path_prefix: /var/loki
-        replication_factor: 1
-      server:
-        grpc_listen_port: 9095
-        http_listen_port: 3100
-      memberlist:
-        join_members:
-          - loki-memberlist
-      schema_config:
-        configs:
+    memberlistConfig:
+      join_members:
+        - loki-memberlist
+
+    schemaConfig:
+      configs:
         - from: "2020-10-24"
           store: boltdb-shipper
           object_store: filesystem
@@ -35,15 +22,18 @@ main:
           index:
             prefix: index_
             period: 24h
-      storage_config:
-        boltdb_shipper:
-          active_index_directory: /var/loki/index
-          cache_location: /var/loki/boltdb-cache
-          shared_store: filesystem
-        filesystem:
-          directory: /var/loki/chunks
-      limits_config:
-        max_entries_limit_per_query: 5000
-        reject_old_samples: true
-        reject_old_samples_max_age: 168h
-        split_queries_by_interval: 15m
+
+    storage_config:
+      boltdb_shipper:
+        active_index_directory: /var/loki/index
+        cache_location: /var/loki/boltdb-cache
+        shared_store: filesystem
+      filesystem:
+        directory: /var/loki/chunks
+
+    limits_config:
+      max_entries_limit_per_query: 5000
+      reject_old_samples: true
+      reject_old_samples_max_age: 168h
+      split_queries_by_interval: 15m
+
