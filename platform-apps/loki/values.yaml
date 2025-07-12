@@ -5,11 +5,12 @@ main:
     replicas: 1
 
   simpleScalable:
+    enabled: false
     gateway:
       replicas: 0
-    ingester:
-      replicas: 0
     distributor:
+      replicas: 0
+    ingester:
       replicas: 0
     querier:
       replicas: 0
