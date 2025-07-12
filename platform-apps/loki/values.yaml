@@ -1,4 +1,7 @@
 loki:
+  # Single binary deployment
+  deploymentMode: SingleBinary
+
   singleBinary:
     replicas: 1
     podSecurityContext:
@@ -6,68 +9,76 @@ loki:
     securityContext:
       runAsUser: 10001
       runAsGroup: 10001
+    persistence:
+      enabled: true
+      size: 10Gi
+      storageClass: local-path
 
-  storage:
-    backend: filesystem
-    bucketNames:
-      chunks: "chunks"
-      index: "index"
-      wal: "wal"
+  # Authentication
+  auth_enabled: false  # Changed to false for single binary mode
 
-    bucketNames:
-      chunks: "chunks"
-      index: "index"
-      wal: "wal"
-
-  persistence:
-    enabled: true
-    size: 10Gi
-    storageClassName: local-path
-
-  auth_enabled: true
-
-  common:
+  # Common configuration
+  commonConfig:
     path_prefix: /var/loki
     replication_factor: 1
 
+  # Server configuration
   server:
     grpc_listen_port: 9095
     http_listen_port: 3100
 
-  memberlist:
-    join_members:
-      - loki-memberlist
+  # Storage configuration - simplified for filesystem
+  storage:
+    type: filesystem
+    filesystem:
+      chunks_directory: /var/loki/chunks
+      rules_directory: /var/loki/rules
 
-  schema_config:
+  # Schema configuration
+  schemaConfig:
     configs:
       - from: "2020-10-24"
-        store: boltdb-shipper
+        store: tsdb
         object_store: filesystem
-        schema: v11
+        schema: v13
         index:
           prefix: index_
           period: 24h
 
-  storage_config:
-    boltdb_shipper:
-      active_index_directory: /var/loki/index
-      cache_location: /var/loki/boltdb-cache
-      shared_store: filesystem
-    filesystem:
-      directory: /var/loki/chunks
-
+  # Limits configuration
   limits_config:
     max_entries_limit_per_query: 5000
     reject_old_samples: true
     reject_old_samples_max_age: 168h
     split_queries_by_interval: 15m
+    retention_period: 744h  # 31 days
 
-compactor:
-  storage:
-    type: filesystem
+  # Compactor configuration
+  compactor:
+    working_directory: /var/loki/compactor
+    retention_enabled: true
+    retention_delete_delay: 2h
+    retention_delete_worker_count: 150
+
+  # Query configuration
+  query_range:
+    align_queries_with_step: true
+    cache_results: true
+
+  # Memberlist configuration (simplified)
+  memberlistConfig:
+    join_members:
+      - loki-memberlist
+
+# Disable components not needed for single binary
+chunksCache:
+  enabled: false
+
+resultsCache:
+  enabled: false
 
 ruler:
-  storage:
-    type: filesystem
+  enabled: false
 
-
+tableManager:
+  retention_deletes_enabled: false
