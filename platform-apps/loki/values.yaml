@@ -4,8 +4,34 @@ main:
   singleBinary:
     replicas: 1
 
-  # Make sure these are NOT set
-  write:
-    replicas: 0
-  read:
-    replicas: 0
+  loki:
+    auth_enabled: false
+
+    storage:
+      type: filesystem
+      filesystem:
+        directory: /var/loki
+
+    schemaConfig:
+      configs:
+        - from: 2024-01-01
+          store: boltdb-shipper
+          object_store: filesystem
+          schema: v13
+          index:
+            prefix: index_
+            period: 24h
+
+    compactor:
+      working_directory: /var/loki/compactor
+      shared_store: filesystem
+
+    limits_config:
+      retention_period: 168h  # 7 days
+
+  persistence:
+    enabled: true
+    storageClassName: standard
+    accessModes:
+      - ReadWriteOnce
+    size: 5Gi
