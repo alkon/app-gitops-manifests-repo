@@ -76,9 +76,9 @@ loki:
     lokiCanary:
       enabled: false
 
-    # Test pods that might include agent
-    test:
-      enabled: false
+  # Test section should be at root level under loki, not under monitoring
+  test:
+    enabled: false
 
   selfMonitoring:
     enabled: false
@@ -86,15 +86,7 @@ loki:
       installOperator: false
       enabled: false
 
-# Explicit top-level disabling of agent CRDs and workloads if present in chart
-grafana-agent-operator:
-  enabled: false
-
-grafana-agent:
-  enabled: false
-
 # Top-level disables for various agent components
-# Try these if the above doesn't work
 grafana-agent-operator:
   enabled: false
 
@@ -118,30 +110,3 @@ monitoring:
   enabled: false
   grafanaAgent:
     enabled: false
-
-
-#monitoring:
-#  selfMonitoring:
-#    enabled: false
-#    grafanaAgent:
-#      installOperator: false
-#      enabled: false  # <-- important extra line
-#  serviceMonitor:
-#    enabled: false
-#  rules:
-#    enabled: false
-#  dashboards:
-#    enabled: false
-#  lokiCanary:
-#    enabled: false  # disables loki-canary side workload
-#  lokiCanaryConfig:
-#    enabled: false
-
-
-
-# Explicit top-level disabling of agent CRDs and workloads if present in chart
-#grafana-agent-operator:
-#  enabled: false
-#
-#grafana-agent:
-#  enabled: false
