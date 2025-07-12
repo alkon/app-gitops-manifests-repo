@@ -64,3 +64,9 @@ compactor:
 ruler:
   storage:
     type: filesystem
+
+monitoring:
+  selfMonitoring:
+    enabled: false
+    grafanaAgent:
+      installOperator: false
