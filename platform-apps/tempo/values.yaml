@@ -1,0 +1,65 @@
+# Enables Tempo in single binary mode, suitable for dev/local tracing
+mode: "tempo"
+
+tempo:
+  config:
+    server:
+      http_listen_port: 3100  # internal HTTP port
+    distributor:
+      receivers:
+        otlp:
+          protocols:
+            grpc:
+            http:
+
+    ingester:
+      trace_idle_period: 10s
+      max_block_duration: 5m
+
+    compactor:
+      compaction:
+        block_retention: 1h
+
+    storage:
+      trace:
+        backend: "local"
+        local:
+          path: "/bitnami/grafana-tempo/data"  # in-memory compatible for local/dev
+
+    querier:
+      frontend_worker:
+        frontend_address: tempo-distributor:9095
+
+    query_frontend:
+      search:
+        enabled: true
+
+# Disable persistence for pure in-memory storage
+persistence:
+  enabled: false
+
+# Enable service so Grafana can reach Tempo via DNS
+service:
+  type: ClusterIP
+  ports:
+    - name: tempo
+      port: 3100
+      targetPort: 3100
+    - name: otlp-grpc
+      port: 4317
+      targetPort: 4317
+    - name: otlp-http
+      port: 4318
+      targetPort: 4318
+
+# Optional: expose metrics if needed
+metrics:
+  enabled: false
+
+# Optional: disable alerting/complicated components for minimal setup
+alertmanager:
+  enabled: false
+grafana:
+  enabled: false
+prometheus:
+  enabled: false
