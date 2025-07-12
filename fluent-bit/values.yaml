@@ -1,0 +1,48 @@
+main:
+  service:
+    type: ClusterIP
+    port: 2020
+
+  config:
+    service: |
+      [SERVICE]
+          Flush        1
+          Log_Level    info
+          Parsers_File parsers.conf
+    inputs: |
+      [INPUT]
+          Name              tail
+          Path              /var/log/containers/*.log
+          Parser            docker
+          Tag               kube.*
+          Refresh_Interval  5
+          Mem_Buf_Limit     10MB
+          Skip_Long_Lines   On
+
+    filters: |
+      [FILTER]
+          Name                kubernetes
+          Match               kube.*
+          Kube_Tag_Prefix     kube.var.log.containers.
+          Merge_Log           On
+          Keep_Log            Off
+          Annotations         Off
+          Labels              On
+
+    outputs: |
+      [OUTPUT]
+          Name              loki
+          Match             *
+          Url               http://loki.monitoring.svc.cluster.local:3100
+          BatchWait         1
+          BatchSize         1048576
+          LogLevel          info
+          Retry_Limit       False
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
