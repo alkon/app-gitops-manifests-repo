@@ -1,40 +1,17 @@
+# Minimal configuration to avoid template errors
 loki:
-  # Single binary deployment
-  deploymentMode: SingleBinary
+  auth_enabled: false
 
-  singleBinary:
-    replicas: 1
-    podSecurityContext:
-      fsGroup: 10001
-    securityContext:
-      runAsUser: 10001
-      runAsGroup: 10001
-    persistence:
-      enabled: true
-      size: 10Gi
-      storageClass: local-path
-
-  # Authentication
-  auth_enabled: false  # Changed to false for single binary mode
-
-  # Common configuration
   commonConfig:
-    path_prefix: /var/loki
     replication_factor: 1
 
-  # Server configuration
-  server:
-    grpc_listen_port: 9095
-    http_listen_port: 3100
-
-  # Storage configuration - simplified for filesystem
   storage:
+    bucketNames:
+      chunks: "chunks"
+      ruler: "ruler"
+      admin: "admin"
     type: filesystem
-    filesystem:
-      chunks_directory: /var/loki/chunks
-      rules_directory: /var/loki/rules
 
-  # Schema configuration
   schemaConfig:
     configs:
       - from: "2020-10-24"
@@ -45,32 +22,17 @@ loki:
           prefix: index_
           period: 24h
 
-  # Limits configuration
-  limits_config:
-    max_entries_limit_per_query: 5000
-    reject_old_samples: true
-    reject_old_samples_max_age: 168h
-    split_queries_by_interval: 15m
-    retention_period: 744h  # 31 days
+singleBinary:
+  replicas: 1
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClass: local-path
 
-  # Compactor configuration
-  compactor:
-    working_directory: /var/loki/compactor
-    retention_enabled: true
-    retention_delete_delay: 2h
-    retention_delete_worker_count: 150
+# Disable everything else
+enterprise:
+  enabled: false
 
-  # Query configuration
-  query_range:
-    align_queries_with_step: true
-    cache_results: true
-
-  # Memberlist configuration (simplified)
-  memberlistConfig:
-    join_members:
-      - loki-memberlist
-
-# Disable components not needed for single binary
 chunksCache:
   enabled: false
 
@@ -82,3 +44,12 @@ ruler:
 
 tableManager:
   retention_deletes_enabled: false
+
+monitoring:
+  enabled: false
+
+test:
+  enabled: false
+
+gateway:
+  enabled: false
