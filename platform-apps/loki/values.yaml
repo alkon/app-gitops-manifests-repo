@@ -70,10 +70,21 @@ monitoring:
     enabled: false
     grafanaAgent:
       installOperator: false
+      enabled: false  # <-- important extra line
   serviceMonitor:
     enabled: false
   rules:
     enabled: false
   dashboards:
     enabled: false
+  lokiCanary:
+    enabled: false  # disables loki-canary side workload
+  lokiCanaryConfig:
+    enabled: false
 
+# Explicit top-level disabling of agent CRDs and workloads if present in chart
+grafana-agent-operator:
+  enabled: false
+
+grafana-agent:
+  enabled: false
