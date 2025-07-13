@@ -23,7 +23,8 @@ main:  # Corresponds to the 'alias: main' in Chart.yaml
       datasources:
         - name: Prometheus
           type: prometheus
-          url: "http://thanos-query-query.thanos-ns.svc.cluster.local:9090" # <--- Static URL here
+#          url: "http://thanos-query-query.thanos-ns.svc.cluster.local:9090" # <--- Static URL here
+          url: "http://tempo-app.monitoring.svc.cluster.local:3200" # Grafana's Tempo Chart
           isDefault: true
           access: proxy
           editable: true
