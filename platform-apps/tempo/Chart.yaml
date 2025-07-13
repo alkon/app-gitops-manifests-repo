@@ -1,11 +1,23 @@
 apiVersion: v2
-name: tempo
-description: Grafana Tempo (Bitnami) in-memory tracing backend for OTEL
+name: tempo-app
+description: Wrapper chart to deploy Grafana Tempo (official) in single binary mode
 type: application
 version: 0.1.0
-appVersion: "2.8.1"
+appVersion: 2.8.1
 
 dependencies:
-  - name: grafana-tempo
-    version: 4.0.11
-    repository: https://charts.bitnami.com/bitnami
+  - name: tempo
+    version: 1.23.2
+    repository: https://grafana.github.io/helm-charts
+
+#apiVersion: v2
+#name: tempo
+#description: Grafana Tempo (Bitnami) in-memory tracing backend for OTEL
+#type: application
+#version: 0.1.0
+#appVersion: "2.8.1"
+#
+#dependencies:
+#  - name: grafana-tempo
+#    version: 4.0.11
+#    repository: https://charts.bitnami.com/bitnami
