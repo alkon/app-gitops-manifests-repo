@@ -1,10 +1,6 @@
-# Existing top-level config stays as is...
-
 tempo:
-
   resourcesPreset: "medium"
 
-  # Option 2: Manual resources (if preset doesn't work)
   ingester:
     enabled: true
     resources:
@@ -14,6 +10,8 @@ tempo:
       limits:
         memory: "2Gi"
         cpu: "500m"
+    trace_idle_period: 10s
+    max_block_duration: 5m
 
   distributor:
     enabled: true
@@ -24,40 +22,6 @@ tempo:
       limits:
         memory: "1Gi"
         cpu: "200m"
-
-  # Override the global container resources
-#  containerResources:
-#    requests:
-#      memory: 1.5Gi
-#      cpu: 250m
-#    limits:
-#      memory: 2Gi
-#      cpu: 500m
-#
-#  # Here we add resource requests and limits for the ingester container (to prevent OOM):
-#  ingester:
-#    enabled: true
-#    resources:
-#      requests:
-#        memory: 1.5Gi
-#        cpu: 250m
-#      limits:
-#        memory: 2Gi
-#        cpu: 500m
-
-
-  config:
-    server:
-      http_listen_port: 3100  # internal HTTP port
-    distributor:
-      receivers:
-        otlp:
-          protocols:
-            grpc:
-            http:
-
-  # Explicitly expose port 4317!
-  distributor:
     service:
       enabled: true
       ports:
@@ -65,30 +29,30 @@ tempo:
           port: 4317
           targetPort: 4317
 
-    ingester:
-      trace_idle_period: 10s
-      max_block_duration: 5m
-      # NOTE: This block is config for the ingester process itself, not resources
+  compactor:
+    compaction:
+      block_retention: 1h
 
-    compactor:
-      compaction:
-        block_retention: 1h
-
+  config:
+    server:
+      http_listen_port: 3100
+    distributor:
+      receivers:
+        otlp:
+          protocols:
+            grpc:
+            http:
     storage:
       trace:
         backend: "local"
         local:
-          path: "/bitnami/grafana-tempo/data"  # local dev storage
-
+          path: "/bitnami/grafana-tempo/data"
     querier:
       frontend_worker:
         frontend_address: tempo-distributor:9095
-
     query_frontend:
       search:
         enabled: true
-
-# The rest unchanged:
 
 persistence:
   enabled: false
