@@ -20,17 +20,18 @@ main:  # Corresponds to the 'alias: main' in Chart.yaml
   datasources:
     datasources.yaml:
       apiVersion: 1
+
       datasources:
         - name: Prometheus
           type: prometheus
-#          url: "http://thanos-query-query.thanos-ns.svc.cluster.local:9090" # <--- Static URL here
-          url: "http://tempo-app-grafana-tempo-query-frontend.monitoring.svc.cluster.local:3200" # Grafana's Tempo Chart
+          url: "http://thanos-query-query.thanos-ns.svc.cluster.local:9090"
           isDefault: true
           access: proxy
           editable: true
+
         - name: Tempo
           type: tempo
-          access: proxy
-          url: http://tempo-app-grafana-tempo-query-frontend.monitoring.svc.cluster.local:3200
+          url: "http://tempo-app-grafana-tempo-query-frontend.monitoring.svc.cluster.local:3200"
           isDefault: false
+          access: proxy
           editable: true
