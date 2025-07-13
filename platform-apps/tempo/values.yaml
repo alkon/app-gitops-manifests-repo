@@ -27,23 +27,38 @@ tempo:
     enabled: false
 
   config: |
-    receivers:
-      otlp:
-        protocols:
-          grpc:
-          http:
-    storage:
-      trace:
-        backend: local
-        local:
-          path: /tmp/tempo  # Ephemeral dev storage
-    search_enabled: true
+    server:
+      http_listen_port: 3200
+      grpc_listen_port: 9095
+
+    distributor:
+      receivers:
+        otlp:
+          protocols:
+            grpc:
+            http
+
+    ingester:
+      trace_idle_period: 10s
+      max_block_duration: 5m
+
     compactor:
       compaction:
         block_retention: 1h
 
+    storage:
+      trace:
+        backend: local
+        local:
+          path: /tmp/tempo
 
+    querier:
+      frontend_worker:
+        frontend_address: 127.0.0.1:9095
 
+    query_frontend:
+      search:
+        enabled: true
 
 #tempo:
 #  resourcesPreset: "medium"
