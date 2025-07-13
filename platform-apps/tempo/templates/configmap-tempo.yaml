@@ -1,0 +1,44 @@
+{{- if .Values.tempo.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tempo-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: tempo
+    app.kubernetes.io/instance: {{ .Release.Name }}
+data:
+  tempo.yaml: |
+    server:
+      http_listen_port: {{ .Values.tempo.server.http_listen_port }}
+      grpc_listen_port: {{ .Values.tempo.server.grpc_listen_port }}
+
+    distributor:
+      receivers:
+        otlp:
+          protocols:
+            grpc: {}
+            http: {}
+
+    ingester:
+      trace_idle_period: {{ .Values.tempo.ingester.trace_idle_period }}
+      max_block_duration: {{ .Values.tempo.ingester.max_block_duration }}
+
+    compactor:
+      compaction:
+        block_retention: {{ .Values.tempo.compactor.block_retention }}
+
+    storage:
+      trace:
+        backend: {{ .Values.tempo.storage.backend }}
+        {{ .Values.tempo.storage.backend }}:
+          path: {{ .Values.tempo.storage.path }}
+
+    querier:
+      frontend_worker:
+        frontend_address: {{ .Values.tempo.querier.frontend_address }}
+
+    query_frontend:
+      search:
+        enabled: {{ .Values.tempo.query_frontend.search_enabled }}
+{{- end }}
