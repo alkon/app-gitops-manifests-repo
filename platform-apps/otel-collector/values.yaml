@@ -25,7 +25,8 @@ opentelemetry-collector:
 
       ##  Add exporter to support tracing to Tempo
       otlp:
-        endpoint: tempo-app-grafana-tempo-distributor.monitoring.svc.cluster.local:4317  # <-- Tempo Service endpoint (assuming it's exposed by that name in same namespace)
+        # endpoint: tempo-app-grafana-tempo-distributor.monitoring.svc.cluster.local:4317  # <-- Tempo Service endpoint (assuming it's exposed by that name in same namespace)
+        endpoint: tempo-app.monitoring.svc.cluster.local:4317
         tls:
           insecure: true  # <-- For local testing; adjust for prod
 
