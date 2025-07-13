@@ -1,20 +1,17 @@
-# app-gitops-manifests-repo/platform-apps/otel-config/instrumentation.yaml
-
 apiVersion: opentelemetry.io/v1alpha1
 kind: Instrumentation
 metadata:
-  # Using the name defined for the Instrumentation CR
   name: flask-app-instrumentation
-  namespace: "flask-app-ns"
+  namespace: flask-app-ns
 spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: flask-app
   exporter:
-    # The collector endpoint
-    endpoint: http://otel-collector-opentelemetry-collector.otel-ns.svc.cluster.local:4317
-
+    endpoint: "http://otel-collector-opentelemetry-collector.otel-ns.svc.cluster.local:4317"
   python:
     volumeClaimTemplate: {}
     env:
-      # Environment variables for the injected Python agent
       - name: OTEL_PYTHON_AUTOLOAD_ENABLED
         value: "true"
       - name: OTEL_METRICS_EXPORTER
@@ -34,20 +31,22 @@ spec:
       - name: OTEL_RESOURCE_ATTRIBUTES
         value: "deployment.environment=k8s"
 
+
 #apiVersion: opentelemetry.io/v1alpha1
 #kind: Instrumentation
 #metadata:
+#  # Using the name defined for the Instrumentation CR
 #  name: flask-app-instrumentation
-#  namespace: flask-app-ns
+#  namespace: "flask-app-ns"
 #spec:
-#  selector:
-#    matchLabels:
-#      app.kubernetes.io/instance: flask-app
 #  exporter:
-#    endpoint: "http://otel-collector-opentelemetry-collector.otel-ns.svc.cluster.local:4317"
+#    # The collector endpoint
+#    endpoint: http://otel-collector-opentelemetry-collector.otel-ns.svc.cluster.local:4317
+#
 #  python:
 #    volumeClaimTemplate: {}
 #    env:
+#      # Environment variables for the injected Python agent
 #      - name: OTEL_PYTHON_AUTOLOAD_ENABLED
 #        value: "true"
 #      - name: OTEL_METRICS_EXPORTER
@@ -66,3 +65,4 @@ spec:
 #        value: "grpc"
 #      - name: OTEL_RESOURCE_ATTRIBUTES
 #        value: "deployment.environment=k8s"
+
