@@ -26,7 +26,7 @@ tempo:
   metricsGenerator:
     enabled: false
 
-  config: |
+  config:
     server:
       http_listen_port: 3200
       grpc_listen_port: 9095
@@ -35,8 +35,8 @@ tempo:
       receivers:
         otlp:
           protocols:
-            grpc:
-            http
+            grpc: {}
+            http: {}
 
     ingester:
       trace_idle_period: 10s
@@ -59,85 +59,3 @@ tempo:
     query_frontend:
       search:
         enabled: true
-
-#tempo:
-#  resourcesPreset: "medium"
-#
-#  ingester:
-#    enabled: true
-#    resources:
-#      requests:
-#        memory: "1.5Gi"
-#        cpu: "250m"
-#      limits:
-#        memory: "2Gi"
-#        cpu: "500m"
-#    trace_idle_period: 10s
-#    max_block_duration: 5m
-#
-#  distributor:
-#    enabled: true
-#    resources:
-#      requests:
-#        memory: "512Mi"
-#        cpu: "100m"
-#      limits:
-#        memory: "1Gi"
-#        cpu: "200m"
-#    service:
-#      enabled: true
-#      ports:
-#        - name: otlp-grpc
-#          port: 4317
-#          targetPort: 4317
-#
-#  compactor:
-#    compaction:
-#      block_retention: 1h
-#
-#  config:
-#    server:
-#      http_listen_port: 3100
-#    distributor:
-#      receivers:
-#        otlp:
-#          protocols:
-#            grpc:
-#            http:
-#    storage:
-#      trace:
-#        backend: "local"
-#        local:
-#          path: "/bitnami/grafana-tempo/data"
-#    querier:
-#      frontend_worker:
-#        frontend_address: tempo-distributor:9095
-#    query_frontend:
-#      search:
-#        enabled: true
-#
-#persistence:
-#  enabled: false
-#
-#service:
-#  type: ClusterIP
-#  ports:
-#    - name: tempo
-#      port: 3100
-#      targetPort: 3100
-#    - name: otlp-grpc
-#      port: 4317
-#      targetPort: 4317
-#    - name: otlp-http
-#      port: 4318
-#      targetPort: 4318
-#
-#metrics:
-#  enabled: false
-#
-#alertmanager:
-#  enabled: false
-#grafana:
-#  enabled: false
-#prometheus:
-#  enabled: false
