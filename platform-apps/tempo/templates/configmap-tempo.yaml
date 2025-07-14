@@ -12,6 +12,20 @@ data:
     server:
       http_listen_port: {{ .Values.tempo.server.http_listen_port }}
       grpc_listen_port: {{ .Values.tempo.server.grpc_listen_port }}
+    
+    metrics_generator:
+      storage:
+        path: /var/tempo/metrics-generator-wal
+      remote_write:
+        - url: {{ .Values.tempo.metricsGenerator.remoteWriteUrl }}
+
+    overrides:
+      defaults:
+        metrics_generator:
+          processors:
+          {{- range .Values.tempo.overrides.defaults.metrics_generator.processors }}
+            - {{ . }}
+          {{- end }}
 
     distributor:
       receivers:
