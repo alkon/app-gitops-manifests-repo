@@ -11,17 +11,15 @@ opentelemetry-collector:
           grpc: {}  # Enables gRPC protocol (usually port 4317)
           http: {}  # Enables HTTP protocol (usually port 4318)
 
-      hostmetrics:  # <-- NEW: Receives system-level metrics from the host node
-        collection_interval: 10s
+      hostmetrics:
+        collection_interval: 5s
         scrapers:
-          cpu: {}
-          memory: {}
-          disk: {}
-          filesystem: {}
-          load: {}
-          network: {}
-          paging: {}
-          processes: {}
+          cpu:
+          memory:
+          disk:
+          filesystem:
+          network:
+          load:
 
     exporters:
       debug:  # <-- Just prints received data to logs (for debug)
@@ -62,7 +60,6 @@ opentelemetry-collector:
         - health_check
         - pprof
         - zpages
-
       pipelines:
         metrics:  # <-- Sends metrics from OTLP & hostmetrics to Thanos
           receivers:
