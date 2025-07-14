@@ -7,3 +7,4 @@ simulator:
     - path: /health
     - path: /hello
     - path: /error
+    - path: /check-external
