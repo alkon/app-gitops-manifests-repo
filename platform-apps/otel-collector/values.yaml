@@ -11,6 +11,18 @@ opentelemetry-collector:
           grpc: {}  # Enables gRPC protocol (usually port 4317)
           http: {}  # Enables HTTP protocol (usually port 4318)
 
+      hostmetrics:  # <-- NEW: Receives system-level metrics from the host node
+        collection_interval: 10s
+        scrapers:
+          cpu: {}
+          memory: {}
+          disk: {}
+          filesystem: {}
+          load: {}
+          network: {}
+          paging: {}
+          processes: {}
+
     exporters:
       debug:  # <-- Just prints received data to logs (for debug)
         verbosity: detailed
@@ -25,7 +37,6 @@ opentelemetry-collector:
 
       ##  Add exporter to support tracing to Tempo
       otlp:
-        # endpoint: tempo-app-grafana-tempo-distributor.monitoring.svc.cluster.local:4317  # <-- Tempo Service endpoint (assuming it's exposed by that name in same namespace)
         endpoint: tempo-app.monitoring.svc.cluster.local:4317
         tls:
           insecure: true  # <-- For local testing; adjust for prod
@@ -53,9 +64,10 @@ opentelemetry-collector:
         - zpages
 
       pipelines:
-        metrics:  # <-- Sends metrics from OTLP to Prometheus-compatible backend (Thanos)
+        metrics:  # <-- Sends metrics from OTLP & hostmetrics to Thanos
           receivers:
             - otlp
+            - hostmetrics  # <-- NEW: Add hostmetrics to pipeline
           processors:
             - batch
           exporters:
@@ -69,4 +81,4 @@ opentelemetry-collector:
             - batch
           exporters:
             - debug
-            - otlp  # <-- This refers to the new Tempo OTLP exporter above
+            - otlp
