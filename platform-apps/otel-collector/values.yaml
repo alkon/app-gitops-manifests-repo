@@ -26,7 +26,7 @@ opentelemetry-collector:
         verbosity: detailed
 
       prometheusremotewrite:
-        endpoint: http://thanos-receiver-receive.thanos-ns.svc.cluster.local:19291/api/v1/receive
+        endpoint: http://thanos-receiver-receive.thanos-ns.svc.cluster.local:10902/api/v1/receive
         tls:
           insecure_skip_verify: true
         resource_to_telemetry_conversion:
