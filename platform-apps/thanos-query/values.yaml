@@ -175,7 +175,8 @@ query:
     sidecarsNamespace: ""
   ## @param query.stores Statically configure store APIs to connect with Thanos Query
   ##
-  stores: []
+  stores:
+    - thanos-receiver-receive.thanos-ns.svc.cluster.local:10901
   ## @param query.sdConfig Query Service Discovery Configuration
   ## Specify content for servicediscovery.yml
   ##
@@ -570,6 +571,7 @@ query:
     ##
     ports:
       http: 9090
+      grpc: 10901
     ## @param query.service.nodePorts.http Specify the Thanos Query HTTP nodePort value for the LoadBalancer and NodePort service types
     ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport
     ##
