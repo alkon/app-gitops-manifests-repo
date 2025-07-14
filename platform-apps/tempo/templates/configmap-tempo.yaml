@@ -12,7 +12,14 @@ data:
     server:
       http_listen_port: {{ .Values.tempo.server.http_listen_port }}
       grpc_listen_port: {{ .Values.tempo.server.grpc_listen_port }}
-    
+
+    distributor:
+      receivers:
+        otlp:
+          protocols:
+            grpc: {}
+            http: {}
+
     metrics_generator:
       storage:
         path: /var/tempo/metrics-generator-wal
@@ -23,16 +30,9 @@ data:
       defaults:
         metrics_generator:
           processors:
-          {{- range .Values.tempo.overrides.defaults.metrics_generator.processors }}
+            {{- range .Values.tempo.overrides.defaults.metrics_generator.processors }}
             - {{ . }}
-          {{- end }}
-
-    distributor:
-      receivers:
-        otlp:
-          protocols:
-            grpc: {}
-            http: {}
+            {{- end }}
 
     ingester:
       trace_idle_period: {{ .Values.tempo.ingester.trace_idle_period }}
