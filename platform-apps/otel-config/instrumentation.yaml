@@ -14,6 +14,8 @@ spec:
     env:
       - name: OTEL_PYTHON_AUTOLOAD_ENABLED
         value: "true"
+      - name: OTEL_PYTHON_AUTO_ENABLE_METRICS
+          value: "true"
       - name: OTEL_METRICS_EXPORTER
         value: "otlp"
       - name: OTEL_LOGS_EXPORTER
@@ -30,3 +32,7 @@ spec:
         value: "grpc"
       - name: OTEL_RESOURCE_ATTRIBUTES
         value: "deployment.environment=k8s"
+      - name: OTEL_LOG_LEVEL
+        value: "DEBUG"  # or INFO or WARN; controls output verbosity
+      - name: OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED
+        value: "true"
