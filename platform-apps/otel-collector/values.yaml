@@ -58,7 +58,7 @@ opentelemetry-collector:
 
     exporters:
       prometheus:
-        endpoint: "0.0.0.0:8888"  # Exposes all metrics, including RED, for Prometheus/Thanos scraping
+        endpoint: "0.0.0.0:8889"  # Exposes all metrics, including RED, for Prometheus/Thanos scraping
 
       prometheusremotewrite:
         endpoint: "http://thanos-receiver-receive.thanos-ns.svc.cluster.local:19291/api/v1/receive"
