@@ -20,15 +20,15 @@ data:
             grpc: {}
             http: {}
 
-    metricsGenerator:
+    metrics_generator:
       storage:
-        path: /var/tempo/metrics-generator-wal
-      remoteWrite:
-        - url: {{ .Values.tempo.metricsGenerator.remoteWriteUrl }}
-      processor:
-        serviceGraphs: {}
-        spanMetrics: {}
-        localBlocks: {}
+        path: {{ .Values.tempo.metricsGenerator.storagePath | quote }}
+      remote_write:
+        - url: {{ .Values.tempo.metricsGenerator.remoteWriteUrl | quote }}
+      processors:
+        - service-graphs
+        - span-metrics
+        - local-blocks
 
     ingester:
       trace_idle_period: {{ .Values.tempo.ingester.trace_idle_period }}

@@ -26,17 +26,10 @@ tempo:
   persistence:
     enabled: false
 
-  # ✅ Enable Metrics Generator
   metricsGenerator:
     enabled: true
     remoteWriteUrl: "http://thanos-receiver-receive.thanos-ns.svc.cluster.local:19291/api/v1/write"
-    config:
-      storage:
-        path: /var/tempo/metrics-generator-wal
-      processor:
-        service_graphs: {}
-        span_metrics: {}
-        local_blocks: {}
+    storagePath: "/var/tempo/metrics-generator-wal"
 
   server:
     http_listen_port: 3200
