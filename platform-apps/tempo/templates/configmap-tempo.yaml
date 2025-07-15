@@ -20,19 +20,15 @@ data:
             grpc: {}
             http: {}
 
-    metrics_generator:
+    metricsGenerator:
       storage:
-        path: "/var/tempo/metrics-generator-wal"
-      remote_write:
-        - url: "http://thanos-receiver-receive.thanos-ns.svc.cluster.local:19291/api/v1/write"
-
-    overrides:
-      defaults:
-        metrics_generator:
-          processors:
-            - service-graphs
-            - span-metrics
-            - local-blocks
+        path: /var/tempo/metrics-generator-wal
+      remoteWrite:
+        - url: {{ .Values.tempo.metricsGenerator.remoteWriteUrl }}
+      processor:
+        serviceGraphs: {}
+        spanMetrics: {}
+        localBlocks: {}
 
     ingester:
       trace_idle_period: {{ .Values.tempo.ingester.trace_idle_period }}
@@ -47,8 +43,6 @@ data:
         backend: {{ .Values.tempo.storage.backend }}
         {{ .Values.tempo.storage.backend }}:
           path: {{ .Values.tempo.storage.path }}
-          wal:
-            path: "/var/tempo/wal"
 
     querier:
       frontend_worker:
