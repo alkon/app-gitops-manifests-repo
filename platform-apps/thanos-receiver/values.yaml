@@ -4011,7 +4011,6 @@ receive:
   ## @param receive.extraFlags Extra Flags to passed to Thanos Receive
   ##
   extraFlags:
-    - "--receive.replication-factor=1"
     - "--receive.hashrings-file=/etc/thanos/hashring.json"
     - "--remote-write.address=0.0.0.0:19291"
     - "--log.level=debug"
