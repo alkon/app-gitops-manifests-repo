@@ -1,36 +1,38 @@
 tempo:
-  enabled: true
+  enabled: false
 
+  # 1. basic service settings
   service:
-    labels: {}
     type: ClusterIP
+    labels: {}
     ports:
       - name: otlp-grpc
         port: 4317
-        targetPort: 4317
       - name: otlp-http
         port: 4318
-        targetPort: 4318
       - name: tempo
         port: 3200
-        targetPort: 3200
 
   resources:
-    requests:
-      memory: 1.5Gi
-      cpu: 250m
-    limits:
-      memory: 2Gi
-      cpu: 500m
+    requests: { memory: 1.5Gi, cpu: 250m }
+    limits:   { memory: 2Gi, cpu: 500m }
 
-  persistence:
-    enabled: false
+  persistence: { enabled: false }
 
+  # 2. Enable metrics-generator
   metricsGenerator:
     enabled: true
     remoteWriteUrl: "http://thanos-receiver-receive.thanos-ns.svc.cluster.local:19291/api/v1/write"
-    storagePath: "/var/tempo/metrics-generator-wal"
+    # Optional advanced config:
+    config:
+      storage:
+        path: "/var/tempo/metrics-generator-wal"
+      processor:
+        serviceGraphs: {}    # Enable service graph metrics
+        spanMetrics: {}      # Enable span-based RED metrics
+        localBlocks: {}      # Needed for historical TraceQL metrics
 
+  # 3. Trace processing settings
   server:
     http_listen_port: 3200
     grpc_listen_port: 9095
@@ -43,11 +45,67 @@ tempo:
     block_retention: "1h"
 
   storage:
-    backend: local
-    path: /tmp/tempo
+    trace:
+      backend: local
+      path: "/tmp/tempo"
 
   querier:
     frontend_address: 127.0.0.1:9095
 
   query_frontend:
     search_enabled: true
+
+
+#tempo:
+#  enabled: true
+#
+#  service:
+#    labels: {}
+#    type: ClusterIP
+#    ports:
+#      - name: otlp-grpc
+#        port: 4317
+#        targetPort: 4317
+#      - name: otlp-http
+#        port: 4318
+#        targetPort: 4318
+#      - name: tempo
+#        port: 3200
+#        targetPort: 3200
+#
+#  resources:
+#    requests:
+#      memory: 1.5Gi
+#      cpu: 250m
+#    limits:
+#      memory: 2Gi
+#      cpu: 500m
+#
+#  persistence:
+#    enabled: false
+#
+#  metricsGenerator:
+#    enabled: true
+#    remoteWriteUrl: "http://thanos-receiver-receive.thanos-ns.svc.cluster.local:19291/api/v1/write"
+#    storagePath: "/var/tempo/metrics-generator-wal"
+#
+#  server:
+#    http_listen_port: 3200
+#    grpc_listen_port: 9095
+#
+#  ingester:
+#    trace_idle_period: "10s"
+#    max_block_duration: "5m"
+#
+#  compactor:
+#    block_retention: "1h"
+#
+#  storage:
+#    backend: local
+#    path: /tmp/tempo
+#
+#  querier:
+#    frontend_address: 127.0.0.1:9095
+#
+#  query_frontend:
+#    search_enabled: true
