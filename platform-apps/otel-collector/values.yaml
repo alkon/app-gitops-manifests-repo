@@ -25,25 +25,36 @@ opentelemetry-collector:
       batch: {}
 
       metricsgeneration:
-        # Converts spans to RED metrics
+        # Rules to convert spans to RED (Request, Error, Duration)  metrics
         rules:
-          - name: http_server_duration_seconds
-            unit: s
-            instrument_type: histogram
-            attributes:
-              - http.method
-              - http.status_code
-              - service.name
+          # 1. Request rate from span count
+          - name: http_request_rate
+            type: calculate
+            metric1: spans_total  # Metric that counts all spans
+            operation: multiply
+            metric2: one_per_second  # a constant you might emit from elsewhere (or skip)
 
-          - name: http_requests_total
-            unit: "1"
-            instrument_type: counter
-            monotonic: true
-            value_extractor: "1"
-            attributes:
-              - http.method
-              - http.status_code
-              - service.name
+          # 2. Error rate from spans with 5xx
+          - name: http_errors_5xx_total
+            type: calculate
+            metric1: spans_http_5xx  # Must be filtered previously via a processor or custom tag
+            operation: add
+            metric2: zero  # Optional filler if metric1 is enough
+
+          # 3. Latency in seconds
+          - name: http_request_duration_seconds
+            type: scale
+            metric1: span.duration
+            scale_by: 0.000001  # Convert from microseconds (or nanoseconds) to seconds
+
+            #        - name:         # (string)  The **new metric name** (REQUIRED)
+            #        - type:         # (string) Either **calculate** or **scale** (REQUIRED)
+            #        - metric1:      # (string)  Base source metric for both types (REQUIRED)
+            #        - metric2:      # (string)  Only for **calculate** rules (OPTIONAL)
+            #        - operation:    # (string) For calculate, e.g., add/subtract/etc. (OPTIONAL)
+            #        - scale_by:     # (number)  For scale rules only (OPTIONAL)
+            #        - unit:         # (string, optional) Metric unit (e.g., "s", "1") (OPTIONAL)
+
 
     exporters:
       prometheus:
