@@ -19,15 +19,17 @@ tempo:
 
   persistence: { enabled: false }
 
+
+#### DEPRECATED  in modern versions of Tempo)
   # 2. Enable metrics-generator
-  metricsGenerator:
-    enabled: true
-    remoteWriteUrl: "http://thanos-receiver-receive.thanos-ns.svc.cluster.local:19291/api/v1/write"
-    storagePath: "/var/tempo/metrics-generator-wal"
-    processor:
-      serviceGraphs: {}
-      spanMetrics: {}
-      localBlocks: {}
+#  metricsGenerator:
+#    enabled: true
+#    remoteWriteUrl: "http://thanos-receiver-receive.thanos-ns.svc.cluster.local:19291/api/v1/write"
+#    storagePath: "/var/tempo/metrics-generator-wal"
+#    processor:
+#      serviceGraphs: {}
+#      spanMetrics: {}
+#      localBlocks: {}
 
   # 3. Trace processing settings
   server:
