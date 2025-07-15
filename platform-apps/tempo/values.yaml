@@ -23,14 +23,11 @@ tempo:
   metricsGenerator:
     enabled: true
     remoteWriteUrl: "http://thanos-receiver-receive.thanos-ns.svc.cluster.local:19291/api/v1/write"
-    # Optional advanced config:
-    config:
-      storage:
-        path: "/var/tempo/metrics-generator-wal"
-      processor:
-        serviceGraphs: {}    # Enable service graph metrics
-        spanMetrics: {}      # Enable span-based RED metrics
-        localBlocks: {}      # Needed for historical TraceQL metrics
+    storagePath: "/var/tempo/metrics-generator-wal"
+    processor:
+      serviceGraphs: {}
+      spanMetrics: {}
+      localBlocks: {}
 
   # 3. Trace processing settings
   server:
