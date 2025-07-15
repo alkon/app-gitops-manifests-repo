@@ -104,9 +104,9 @@ opentelemetry-collector:
             - otlp
 
   #  This block exposes port 8889 for Prometheus/Thanos to scrape RED metrics
-  service:
-    enabled: true
-    ports:
-      - name: prom-spanmetrics
-        port: 8889
-        targetPort: 8889
+#  service:
+#    enabled: true
+#    ports:
+#      - name: prom-spanmetrics
+#        port: 8889
+#        targetPort: 8889
