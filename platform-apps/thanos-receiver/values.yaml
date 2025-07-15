@@ -4016,7 +4016,7 @@ receive:
     - "--remote-write.address=0.0.0.0:19291"
     - "--log.level=debug"
     - "--log.format=logfmt"
-    - "--web.listen-address=0.0.0.0:10902"
+#    - "--web.listen-address=0.0.0.0:10902"
     - "--receive.local-endpoint=$(POD_IP):10901"
     - "--config.file=/etc/thanos/prometheus.yaml"
   ## @param receive.command Override default container command (useful when using custom images)
