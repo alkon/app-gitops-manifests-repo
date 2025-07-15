@@ -963,7 +963,7 @@ queryFrontend:
   ## @param queryFrontend.existingConfigmap Name of existing ConfigMap with Thanos Query Frontend configuration
   ## NOTE: This will override queryFrontend.config
   ##
-  existingConfigmap: ""
+  existingConfigmap: "thanos-scrape-config"
   ## @param queryFrontend.extraEnvVars Extra environment variables for Thanos Query Frontend container
   ## e.g:
   ## extraEnvVars:
@@ -4010,7 +4010,16 @@ receive:
   extraEnvVarsSecret: ""
   ## @param receive.extraFlags Extra Flags to passed to Thanos Receive
   ##
-  extraFlags: []
+  extraFlags:
+    - "--web.enable-admin-api"
+    - "--receive.replication-factor=1"
+    - "--receive.hashrings-file=/etc/thanos/hashring.json"
+    - "--remote-write.address=0.0.0.0:19291"
+    - "--log.level=debug"
+    - "--log.format=logfmt"
+    - "--web.listen-address=0.0.0.0:10902"
+    - "--receive.local-endpoint=$(POD_IP):10901"
+    - "--config.file=/etc/thanos/prometheus.yaml"
   ## @param receive.command Override default container command (useful when using custom images)
   ##
   command: []
