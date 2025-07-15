@@ -1,17 +1,18 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "otel-collector.fullname" . }}-metrics-generation
+  name: {{ include "otel-collector.fullname" . }}-{{ .Values.metricsService.nameSuffix | default "metrics-generation" }}
+  namespace: {{ .Release.Namespace }}
   labels:
-    app.kubernetes.io/name: {{ include "otel-collector.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- include "otel-collector.labels" . | nindent 4 }}
 spec:
-  type: ClusterIP
+  type: {{ .Values.metricsService.type | default "ClusterIP" }}
   selector:
-    app.kubernetes.io/name: {{ include "otel-collector.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- range $key, $value := .Values.metricsService.selectorLabels }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
   ports:
-    - name: prometheus-metrics
-      protocol: TCP
-      port: 8889
-      targetPort: 8889
+    - name: {{ .Values.metricsService.port.name | default "red-metrics" }}
+      port: {{ .Values.metricsService.port.port | default 8889 }}
+      targetPort: {{ .Values.metricsService.port.targetPort | default 8889 }}
+      protocol: {{ .Values.metricsService.port.protocol | default "TCP" }}

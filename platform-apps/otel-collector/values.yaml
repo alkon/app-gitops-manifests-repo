@@ -116,4 +116,16 @@ opentelemetry-collector:
             - prometheusremotewrite
             - debug
 
+  metricsService: # Fields to be used in the metrics-generation-service.yaml
+    nameSuffix: "metrics-generation"     # suffix for service name
+    type: "ClusterIP"                    # service type
+    selectorLabels: # labels to select the collector pods
+      app.kubernetes.io/name: "opentelemetry-collector"
+      app.kubernetes.io/instance: "otel-collector"
+    port:
+      name: "red-metrics"
+      port: 8889
+      targetPort: 8889
+      protocol: "TCP"
+
 
