@@ -4018,7 +4018,7 @@ receive:
     - "--log.format=logfmt"
 #    - "--web.listen-address=0.0.0.0:10902"
     - "--receive.local-endpoint=$(POD_IP):10901"
-    - "--config.file=/etc/thanos/prometheus.yaml"
+#    - "--config.file=/etc/thanos/prometheus.yaml"
   ## @param receive.command Override default container command (useful when using custom images)
   ##
   command: []
