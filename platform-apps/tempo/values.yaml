@@ -52,6 +52,23 @@ tempo:
   query_frontend:
     search_enabled: true
 
+  container:
+    readinessProbe:
+      httpGet:
+        path: /ready
+        port: 3200
+      initialDelaySeconds: 20
+      periodSeconds: 10
+      failureThreshold: 6
+
+    livenessProbe:
+      httpGet:
+        path: /metrics
+        port: 3200
+      initialDelaySeconds: 30
+      periodSeconds: 15
+      failureThreshold: 6
+
 
 #tempo:
 #  enabled: true

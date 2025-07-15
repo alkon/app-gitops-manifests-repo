@@ -12,6 +12,9 @@ data:
     server:
       http_listen_port: {{ .Values.tempo.server.http_listen_port }}
       grpc_listen_port: {{ .Values.tempo.server.grpc_listen_port }}
+    
+    usage_report:
+      reporting_enabled: false
 
     distributor:
       receivers:
