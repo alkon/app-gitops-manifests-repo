@@ -6,7 +6,7 @@ opentelemetry-collector:
 
   config:
     receivers:
-      # Accept metrics and traces from instrumented apps (via OTLP)
+      # Receives telemetry data from instrumented apps
       otlp:
         protocols:
           grpc: {}
@@ -24,25 +24,25 @@ opentelemetry-collector:
           load:
 
     processors:
-      # Batch for improved performance and throughput
+      # Batches telemetry for efficiency
       batch: {}
 
-      # Convert traces to RED metrics (span-level metrics)
+      # Converts spans (traces) into RED metrics
       spanmetrics:
-        metrics_exporter: prometheus  # Required: which exporter will expose metrics
+        metrics_exporter: prometheus  # Required: name of the exporter that will expose metrics
         dimensions:
-          - name: http.method
-          - name: http.status_code
-          - name: service.name
+          - name: http.method         # Useful RED dimension
+          - name: http.status_code    # Status codes for error rate tracking
+          - name: service.name        # To group spans by service
         exemplars:
-          enabled: true
+          enabled: true               # Adds trace exemplars to metrics (for linking metrics ↔ traces)
 
     exporters:
-      # Debug exporter logs output — useful during testing
+      # Debug exporter for logging all telemetry
       debug:
         verbosity: detailed
 
-      # For metrics → Thanos via remote_write
+      # Exports metrics to Thanos via remote_write
       prometheusremotewrite:
         endpoint: http://thanos-receiver-receive.thanos-ns.svc.cluster.local:19291/api/v1/receive
         tls:
@@ -50,17 +50,18 @@ opentelemetry-collector:
         resource_to_telemetry_conversion:
           enabled: true
 
-      # Prometheus exporter — used by spanmetrics processor
+      # Prometheus exporter — required by `spanmetrics` to emit RED metrics
       prometheus:
-        endpoint: 0.0.0.0:8889  # This endpoint will be scraped by Prometheus
+        endpoint: 0.0.0.0:8889  # Exposes metrics from spanmetrics processor
 
-      # For traces → Tempo
+      # Exports traces to Tempo
       otlp:
         endpoint: tempo-app.monitoring.svc.cluster.local:4317
         tls:
-          insecure: true  # Suitable for dev/test
+          insecure: true
 
     extensions:
+      # Standard OTEL extensions
       health_check:
         endpoint: 0.0.0.0:13133
       pprof:
@@ -73,7 +74,7 @@ opentelemetry-collector:
         logs:
           level: debug
         metrics:
-          address: 0.0.0.0:8888  # default internal collector metrics
+          address: 0.0.0.0:8888  # Collector internal metrics (not spanmetrics)
 
       extensions:
         - health_check
@@ -81,6 +82,7 @@ opentelemetry-collector:
         - zpages
 
       pipelines:
+        # Metrics pipeline for host & app metrics
         metrics:
           receivers:
             - otlp
@@ -90,20 +92,21 @@ opentelemetry-collector:
           exporters:
             - debug
             - prometheusremotewrite
-            - prometheus  # <-- Required to expose spanmetrics metrics
+            - prometheus  # Required to expose spanmetrics metrics
 
+        # Traces pipeline that feeds spanmetrics → RED metrics
         traces:
           receivers:
             - otlp
           processors:
-            - spanmetrics  # <-- Converts traces to metrics
+            - spanmetrics  # Converts spans to metrics
             - batch
           exporters:
             - debug
             - otlp
 
-  # Optional: Expose port 8889 for spanmetrics (prometheus scrape target)
-  service:
+  # Exposes an additional Kubernetes service for scraping spanmetrics (port 8889)
+  extraService:
     enabled: true
     ports:
       - name: prom-spanmetrics
