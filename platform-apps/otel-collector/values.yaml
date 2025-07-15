@@ -6,11 +6,13 @@ opentelemetry-collector:
 
   config:
     receivers:
-      otlp:  # <-- Receives both metrics and traces from instrumented apps (via OTLP gRPC or HTTP)
+      # Accept metrics and traces from instrumented apps (via OTLP)
+      otlp:
         protocols:
-          grpc: {}  # Enables gRPC protocol (usually port 4317)
-          http: {}  # Enables HTTP protocol (usually port 4318)
+          grpc: {}
+          http: {}
 
+      # Collect host-level metrics
       hostmetrics:
         collection_interval: 5s
         scrapers:
@@ -21,26 +23,42 @@ opentelemetry-collector:
           network:
           load:
 
+    processors:
+      # Batch for improved performance and throughput
+      batch: {}
+
+      # Convert traces to RED metrics (span-level metrics)
+      spanmetrics:
+        metrics_exporter: prometheus  # Required: which exporter will expose metrics
+        dimensions:
+          - name: http.method
+          - name: http.status_code
+          - name: service.name
+        exemplars:
+          enabled: true
+
     exporters:
-      debug:  # <-- Just prints received data to logs (for debug)
+      # Debug exporter logs output — useful during testing
+      debug:
         verbosity: detailed
 
+      # For metrics → Thanos via remote_write
       prometheusremotewrite:
         endpoint: http://thanos-receiver-receive.thanos-ns.svc.cluster.local:19291/api/v1/receive
         tls:
           insecure_skip_verify: true
         resource_to_telemetry_conversion:
           enabled: true
-        # <-- Sends metrics to Thanos (no trace support here)
 
-      ##  Add exporter to support tracing to Tempo
+      # Prometheus exporter — used by spanmetrics processor
+      prometheus:
+        endpoint: 0.0.0.0:8889  # This endpoint will be scraped by Prometheus
+
+      # For traces → Tempo
       otlp:
         endpoint: tempo-app.monitoring.svc.cluster.local:4317
         tls:
-          insecure: true  # <-- For local testing; adjust for prod
-
-    processors:
-      batch: {}  # <-- Batches metrics/traces before export
+          insecure: true  # Suitable for dev/test
 
     extensions:
       health_check:
@@ -55,27 +73,39 @@ opentelemetry-collector:
         logs:
           level: debug
         metrics:
-          address: 0.0.0.0:8888
+          address: 0.0.0.0:8888  # default internal collector metrics
+
       extensions:
         - health_check
         - pprof
         - zpages
+
       pipelines:
-        metrics:  # <-- Sends metrics from OTLP & hostmetrics to Thanos
+        metrics:
           receivers:
             - otlp
-            - hostmetrics  # <-- NEW: Add hostmetrics to pipeline
+            - hostmetrics
           processors:
             - batch
           exporters:
             - debug
             - prometheusremotewrite
+            - prometheus  # <-- Required to expose spanmetrics metrics
 
-        traces:  # <-- Pipeline to forward OTLP traces to Tempo
+        traces:
           receivers:
             - otlp
           processors:
+            - spanmetrics  # <-- Converts traces to metrics
             - batch
           exporters:
             - debug
             - otlp
+
+  # Optional: Expose port 8889 for spanmetrics (prometheus scrape target)
+  service:
+    enabled: true
+    ports:
+      - name: prom-spanmetrics
+        port: 8889
+        targetPort: 8889
