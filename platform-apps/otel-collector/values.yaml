@@ -29,14 +29,11 @@ opentelemetry-collector:
       batch: {}
 
       # Converts spans (traces) into RED metrics
-      spanmetrics:
-        metrics_exporter: prometheus  # Required exporter for span RED metrics
+      metricsgeneration:  # Required exporter for span RED metrics
         dimensions:
           - name: http.method         # Useful for grouping by HTTP verb
           - name: http.status_code    # Helps with error rate
           - name: service.name        # Groups spans by service
-        exemplars:
-          enabled: true               # Links traces with metrics
 
     exporters:
       # Logs all telemetry — useful for debugging
@@ -97,7 +94,7 @@ opentelemetry-collector:
           receivers:
             - otlp
           processors:
-            - spanmetrics
+            - metricsgeneration
             - batch
           exporters:
             - debug
