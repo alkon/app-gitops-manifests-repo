@@ -96,23 +96,24 @@ opentelemetry-collector:
         - zpages
 
       pipelines:
+        traces:
+          receivers:
+            - otlp
+          processors:
+            - batch
+          exporters:
+            - otlp # Sends raw traces to Tempo
 
         metrics:
           receivers:
             - otlp
             - hostmetrics
           processors:
+            - metricsgeneration  # Converts spans to RED metrics
             - batch
           exporters:
             - prometheus
             - prometheusremotewrite
             - debug
 
-        traces:
-          receivers:
-            - otlp
-          processors:
-            - metricsgeneration  # Converts spans to RED metrics
-            - batch
-          exporters:
-            - otlp               # Sends raw traces to Tempo
+
