@@ -1,5 +1,6 @@
 opentelemetry-collector:
   mode: deployment
+
   image:
     repository: "otel/opentelemetry-collector-contrib"
     tag: "0.128.0"
@@ -29,16 +30,16 @@ opentelemetry-collector:
 
       # Converts spans (traces) into RED metrics
       spanmetrics:
-        metrics_exporter: prometheus  # Required: name of the exporter that will expose metrics
+        metrics_exporter: prometheus  # Required exporter for span RED metrics
         dimensions:
-          - name: http.method         # Useful RED dimension
-          - name: http.status_code    # Status codes for error rate tracking
-          - name: service.name        # To group spans by service
+          - name: http.method         # Useful for grouping by HTTP verb
+          - name: http.status_code    # Helps with error rate
+          - name: service.name        # Groups spans by service
         exemplars:
-          enabled: true               # Adds trace exemplars to metrics (for linking metrics ↔ traces)
+          enabled: true               # Links traces with metrics
 
     exporters:
-      # Debug exporter for logging all telemetry
+      # Logs all telemetry — useful for debugging
       debug:
         verbosity: detailed
 
@@ -50,18 +51,17 @@ opentelemetry-collector:
         resource_to_telemetry_conversion:
           enabled: true
 
-      # Prometheus exporter — required by `spanmetrics` to emit RED metrics
+      # Prometheus exporter — used by spanmetrics processor
       prometheus:
-        endpoint: 0.0.0.0:8889  # Exposes metrics from spanmetrics processor
+        endpoint: 0.0.0.0:8889  # Span RED metrics exposed here
 
       # Exports traces to Tempo
       otlp:
         endpoint: tempo-app.monitoring.svc.cluster.local:4317
         tls:
-          insecure: true
+          insecure: true  # OK for local/dev
 
     extensions:
-      # Standard OTEL extensions
       health_check:
         endpoint: 0.0.0.0:13133
       pprof:
@@ -74,15 +74,13 @@ opentelemetry-collector:
         logs:
           level: debug
         metrics:
-          address: 0.0.0.0:8888  # Collector internal metrics (not spanmetrics)
-
+          address: 0.0.0.0:8888  # Collector internal metrics (not span RED)
       extensions:
         - health_check
         - pprof
         - zpages
-
       pipelines:
-        # Metrics pipeline for host & app metrics
+        # Metrics pipeline for app + host metrics
         metrics:
           receivers:
             - otlp
@@ -92,21 +90,21 @@ opentelemetry-collector:
           exporters:
             - debug
             - prometheusremotewrite
-            - prometheus  # Required to expose spanmetrics metrics
+            - prometheus  # Must include to expose span RED metrics
 
-        # Traces pipeline that feeds spanmetrics → RED metrics
+        # Traces pipeline that feeds RED metrics via spanmetrics processor
         traces:
           receivers:
             - otlp
           processors:
-            - spanmetrics  # Converts spans to metrics
+            - spanmetrics
             - batch
           exporters:
             - debug
             - otlp
 
-  # Exposes an additional Kubernetes service for scraping spanmetrics (port 8889)
-  extraService:
+  #  This block exposes port 8889 for Prometheus/Thanos to scrape RED metrics
+  service:
     enabled: true
     ports:
       - name: prom-spanmetrics
