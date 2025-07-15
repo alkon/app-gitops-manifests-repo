@@ -115,6 +115,4 @@ opentelemetry-collector:
             - metricsgeneration  # Converts spans to RED metrics
             - batch
           exporters:
-            - prometheus         # RED metrics exposed to same endpoint
             - otlp               # Sends raw traces to Tempo
-            - debug
