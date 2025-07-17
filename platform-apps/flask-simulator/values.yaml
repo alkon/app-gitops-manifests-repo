@@ -5,6 +5,7 @@ simulator:
   curl_timeout_seconds: 3
   endpoints:
     - path: /health
-    - path: /hello
-    - path: /error
-    - path: /check-external
+#    - path: /hello
+#    - path: /error
+#    - path: /check-external
+    - path: /checkout
