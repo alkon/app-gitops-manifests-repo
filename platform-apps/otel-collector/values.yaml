@@ -22,7 +22,7 @@ opentelemetry-collector:
           load:
 
     connectors:
-      spanmetrics:  # Connector that converts spans to metrics
+      spanmetrics:  # Connector that converts spans to RED metrics
         histogram:
           explicit:
             buckets: [100us, 1ms, 10ms, 50ms, 100ms, 250ms, 500ms, 1s]
@@ -35,28 +35,28 @@ opentelemetry-collector:
     processors:
       batch: {}
 
-      metricsgeneration:
-        # Rules to convert base spanmetrics to custom RED (Request, Error, Duration) metrics
-        rules:
-          # 1. Request rate (derived from span count)
-          - name: http_request_rate
-            type: calculate
-            metric1: calls_total  # Comes from spanmetrics
-            operation: multiply
-            metric2: one_per_second  # Optional constant to shape rate
+      # metricsgeneration:
+      #   # Rules to convert base spanmetrics to custom RED (Request, Error, Duration) metrics
+      #   rules:
+      #     # 1. Request rate (derived from span count)
+      #     - name: http_request_rate
+      #       type: calculate
+      #       metric1: calls_total  # Comes from spanmetrics
+      #       operation: multiply
+      #       metric2: one_per_second  # Optional constant to shape rate
 
-          # 2. Error rate (spans tagged with 5xx status code)
-          - name: http_errors_5xx_total
-            type: calculate
-            metric1: calls_total{http.status_code=~"5.."}  # Filter 5xx errors
-            operation: add
-            metric2: zero  # Optional filler
+      #     # 2. Error rate (spans tagged with 5xx status code)
+      #     - name: http_errors_5xx_total
+      #       type: calculate
+      #       metric1: calls_total{http.status_code=~"5.."}  # Filter 5xx errors
+      #       operation: add
+      #       metric2: zero  # Optional filler
 
-          # 3. Request duration in seconds
-          - name: http_request_duration_seconds
-            type: scale
-            metric1: duration  # Comes from spanmetrics as histogram/sum
-            scale_by: 0.000001  # Convert microseconds to seconds
+      #     # 3. Request duration in seconds
+      #     - name: http_request_duration_seconds
+      #       type: scale
+      #       metric1: duration  # Comes from spanmetrics as histogram/sum
+      #       scale_by: 0.000001  # Convert microseconds to seconds
 
     exporters:
       prometheus:
@@ -109,10 +109,11 @@ opentelemetry-collector:
 
         metrics:
           receivers:
-            - spanmetrics  # Metrics generated from spans
+            - spanmetrics  # Metrics generated from spans (RED-style)
             - hostmetrics  # System-level metrics
+          # processors:
+          #   - metricsgeneration  # Commented: already handled by spanmetrics connector
           processors:
-            - metricsgeneration  # Generates RED metrics from spanmetrics output
             - batch
           exporters:
             - prometheus
