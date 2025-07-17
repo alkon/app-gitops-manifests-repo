@@ -1,7 +1,7 @@
 apiVersion: v2
 name: otel-collector # Consistent with ArgoCD app_name
 version: 0.1.0  # The Chart's version
-appVersion: "0.128.0"
+appVersion: "0.130.0"
 description: OpenTelemetry Collector managed by ArgoCD
 type: application
 home: https://opentelemetry.io/
@@ -9,5 +9,5 @@ sources:
   - https://github.com/open-telemetry/opentelemetry-helm-charts
 dependencies:
   - name: opentelemetry-collector
-    version: "0.127.1"
+    version: "0.129.0"
     repository: "https://open-telemetry.github.io/opentelemetry-helm-charts"

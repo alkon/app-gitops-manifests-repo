@@ -2,14 +2,14 @@ opentelemetry-collector:
   mode: deployment
   image:
     repository: "otel/opentelemetry-collector-contrib"
-    tag: "0.128.0"
+    tag: "0.130.0"  # Matches appVersion for proper compatibility
 
   config:
     receivers:
       otlp:
         protocols:
-          grpc: {}  # OTLP gRPC (usually 4317)
-          http: {}  # OTLP HTTP (usually 4318)
+          grpc: {}  # OTLP gRPC (port 4317)
+          http: {}  # OTLP HTTP (port 4318)
 
       hostmetrics:
         collection_interval: 5s
@@ -21,44 +21,46 @@ opentelemetry-collector:
           network:
           load:
 
+    connectors:
+      spanmetrics:  # Connector that converts spans to metrics
+        histogram:
+          explicit:
+            buckets: [100us, 1ms, 10ms, 50ms, 100ms, 250ms, 500ms, 1s]
+        dimensions:
+          - name: http.method
+            default: GET
+          - name: http.status_code
+        metrics_flush_interval: 15s
+
     processors:
       batch: {}
 
       metricsgeneration:
-        # Rules to convert spans to RED (Request, Error, Duration)  metrics
+        # Rules to convert base spanmetrics to custom RED (Request, Error, Duration) metrics
         rules:
-          # 1. Request rate from span count
+          # 1. Request rate (derived from span count)
           - name: http_request_rate
             type: calculate
-            metric1: spans_total  # Metric that counts all spans
+            metric1: calls_total  # Comes from spanmetrics
             operation: multiply
-            metric2: one_per_second  # a constant you might emit from elsewhere (or skip)
+            metric2: one_per_second  # Optional constant to shape rate
 
-          # 2. Error rate from spans with 5xx
+          # 2. Error rate (spans tagged with 5xx status code)
           - name: http_errors_5xx_total
             type: calculate
-            metric1: spans_http_5xx  # Must be filtered previously via a processor or custom tag
+            metric1: calls_total{http.status_code=~"5.."}  # Filter 5xx errors
             operation: add
-            metric2: zero  # Optional filler if metric1 is enough
+            metric2: zero  # Optional filler
 
-          # 3. Latency in seconds
+          # 3. Request duration in seconds
           - name: http_request_duration_seconds
             type: scale
-            metric1: span.duration
-            scale_by: 0.000001  # Convert from microseconds (or nanoseconds) to seconds
-
-            #        - name:         # (string)  The **new metric name** (REQUIRED)
-            #        - type:         # (string) Either **calculate** or **scale** (REQUIRED)
-            #        - metric1:      # (string)  Base source metric for both types (REQUIRED)
-            #        - metric2:      # (string)  Only for **calculate** rules (OPTIONAL)
-            #        - operation:    # (string) For calculate, e.g., add/subtract/etc. (OPTIONAL)
-            #        - scale_by:     # (number)  For scale rules only (OPTIONAL)
-            #        - unit:         # (string, optional) Metric unit (e.g., "s", "1") (OPTIONAL)
-
+            metric1: duration  # Comes from spanmetrics as histogram/sum
+            scale_by: 0.000001  # Convert microseconds to seconds
 
     exporters:
       prometheus:
-        endpoint: "0.0.0.0:8889"  # Exposes all metrics, including RED, for Prometheus/Thanos scraping
+        endpoint: "0.0.0.0:8889"  # For Prometheus/Thanos scraping
 
       prometheusremotewrite:
         endpoint: "http://thanos-receiver-receive.thanos-ns.svc.cluster.local:19291/api/v1/receive"
@@ -88,7 +90,7 @@ opentelemetry-collector:
         logs:
           level: debug
         metrics:
-          address: "0.0.0.0:8888"  # Also for internal collector metrics (same port is OK)
+          address: "0.0.0.0:8888"  # Collector internal metrics
 
       extensions:
         - health_check
@@ -99,22 +101,20 @@ opentelemetry-collector:
         traces:
           receivers:
             - otlp
-          processors:
-            - metricsgeneration  # Converts spans to RED metrics
-            - batch
           exporters:
-            - otlp # Sends raw traces to Tempo
+            - spanmetrics  # Send spans to spanmetrics connector
+            - otlp         # Also send to Tempo
+          processors:
+            - batch
 
         metrics:
           receivers:
-            - otlp
-            - hostmetrics
+            - spanmetrics  # Metrics generated from spans
+            - hostmetrics  # System-level metrics
           processors:
-#            - metricsgeneration  # Converts spans to RED metrics
+            - metricsgeneration  # Generates RED metrics from spanmetrics output
             - batch
           exporters:
             - prometheus
             - prometheusremotewrite
             - debug
-
-
