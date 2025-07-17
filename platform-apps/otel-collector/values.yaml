@@ -100,6 +100,7 @@ opentelemetry-collector:
           receivers:
             - otlp
           processors:
+            - metricsgeneration  # Converts spans to RED metrics
             - batch
           exporters:
             - otlp # Sends raw traces to Tempo
@@ -109,7 +110,7 @@ opentelemetry-collector:
             - otlp
             - hostmetrics
           processors:
-            - metricsgeneration  # Converts spans to RED metrics
+#            - metricsgeneration  # Converts spans to RED metrics
             - batch
           exporters:
             - prometheus
