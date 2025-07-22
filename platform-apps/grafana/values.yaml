@@ -1,60 +1,50 @@
-main:  # Corresponds to the 'alias: main' in Chart.yaml
+main: # This 'main' key corresponds to the 'alias: main' in your Chart.yaml for the Grafana subchart
   adminUser: "admin"
   adminPassword: "admin" # <--- WARNING: Default password stored in plain text in Git. Not recommended for production!
+  # For production, consider using a Kubernetes Secret and referencing it here,
+  # or using a secret management solution like Vault.
 
-    # --- Dashboard Provisioning Configuration ---
-    sidecar:
-      dashboards:
-        enabled: true
-        # This label must match the label you put on your ConfigMaps
-        # (e.g., in dashboards-configmap.yaml)
-        label: grafana_dashboard
-        labelValue: "1" # This is the default label value for discovery
+  # --- Dashboard Provisioning Configuration ---
+  # This section enables the Grafana sidecar that watches for dashboard ConfigMaps
+  sidecar:
+    dashboards:
+      enabled: true
+      # The 'label' and 'labelValue' here must match what you set in dashboards-configmap.yaml
+      label: grafana_dashboard
+      labelValue: "1"
+      # Uncomment the line below if your dashboard ConfigMaps might be in other namespaces
+      # searchNamespace: ALL
 
-        # Uncomment if your dashboard ConfigMaps might be in other namespaces
-        # searchNamespace: ALL
+  # This section configures Grafana's internal provisioning system
+  grafana.ini:
+    paths:
+      # This is the directory where Grafana expects to find its provisioning configuration files.
+      # This is a standard Grafana path and usually doesn't need to be changed.
+      provisioning: /etc/grafana/provisioning
 
-    grafana.ini:
-      # Existing paths section if any, or add it:
-      paths:
-        provisioning: /etc/grafana/provisioning  # Default, usually fine
+    dashboardProviders:
+      # The key 'dashboardproviders.yaml' here is the NAME OF THE FILE
+      # that Grafana will look for inside its provisioning directory
+      # (i.e., /etc/grafana/provisioning/dashboards/dashboardproviders.yaml).
+      # This file's content is defined directly below.
+      dashboardproviders.yaml:
+        apiVersion: 1
+        providers:
+          - name: 'custom-app-dashboards' # A descriptive name for this dashboard provider
+            orgId: 1 # The Grafana organization ID (1 is default)
+            folder: 'Application Dashboards' # Optional: Dashboards will appear in this folder in Grafana UI
+            type: file # Specifies that dashboards are loaded from files
+            disableDeletion: false # Set to 'true' if you want to prevent deletion from Grafana UI
+            editable: false # Set to 'false' if you want dashboards to be read-only in Grafana UI
+            options:
+              # This 'path' is where the Grafana sidecar *mounts* the contents
+              # of the ConfigMap created by your dashboards-configmap.yaml template.
+              # The official Grafana Helm chart's sidecar typically mounts ConfigMaps
+              # with the 'grafana_dashboard: "1"' label to /var/lib/grafana/dashboards.
+              path: /var/lib/grafana/dashboards
+  # --- END Dashboard Provisioning Configuration ---
 
-      # Configure dashboard providers
-      # This YAML will be mounted as a file inside the Grafana pod
-      dashboardProviders:
-        dashboardproviders.yaml: # This is the filename that Grafana will read
-          apiVersion: 1
-          providers:
-            - name: 'custom-app-dashboards' # A unique name for your dashboard provider
-              orgId: 1
-              folder: 'Application Dashboards' # Optional: Create a folder in Grafana UI
-              type: file
-              disableDeletion: false # Set to true if you don't want users to delete from UI
-              editable: false # Recommended: Dashboards are managed by Git, not UI
-              options:
-                # This path must match where the Grafana sidecar mounts the ConfigMap contents.
-                # The Grafana Helm chart's sidecar typically mounts ConfigMaps with the
-                # 'grafana_dashboard: "1"' label to /var/lib/grafana/dashboards/
-                path: /var/lib/grafana/dashboards # This is the directory Grafana will scan
-    # --- END NEW: Dashboard Provisioning Configuration ---
-
-
-
-  # Other Grafana configurations
-#  service:
-#    type: ClusterIP
-#    port: 80
-#    targetPort: 3000
-#
-#  persistence:
-#    enabled: true
-#    type: pvc
-#    accessModes:
-#      - ReadWriteOnce
-#    size: 10Gi
-#    storageClassName: standard
-
-  # Datasources configuration
+  # Datasources configuration (your existing configuration)
   datasources:
     datasources.yaml:
       apiVersion: 1
