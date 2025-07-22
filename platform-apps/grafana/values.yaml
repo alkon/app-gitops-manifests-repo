@@ -2,6 +2,44 @@ main:  # Corresponds to the 'alias: main' in Chart.yaml
   adminUser: "admin"
   adminPassword: "admin" # <--- WARNING: Default password stored in plain text in Git. Not recommended for production!
 
+    # --- Dashboard Provisioning Configuration ---
+    sidecar:
+      dashboards:
+        enabled: true
+        # This label must match the label you put on your ConfigMaps
+        # (e.g., in dashboards-configmap.yaml)
+        label: grafana_dashboard
+        labelValue: "1" # This is the default label value for discovery
+
+        # Uncomment if your dashboard ConfigMaps might be in other namespaces
+        # searchNamespace: ALL
+
+    grafana.ini:
+      # Existing paths section if any, or add it:
+      paths:
+        provisioning: /etc/grafana/provisioning  # Default, usually fine
+
+      # Configure dashboard providers
+      # This YAML will be mounted as a file inside the Grafana pod
+      dashboardProviders:
+        dashboardproviders.yaml: # This is the filename that Grafana will read
+          apiVersion: 1
+          providers:
+            - name: 'custom-app-dashboards' # A unique name for your dashboard provider
+              orgId: 1
+              folder: 'Application Dashboards' # Optional: Create a folder in Grafana UI
+              type: file
+              disableDeletion: false # Set to true if you don't want users to delete from UI
+              editable: false # Recommended: Dashboards are managed by Git, not UI
+              options:
+                # This path must match where the Grafana sidecar mounts the ConfigMap contents.
+                # The Grafana Helm chart's sidecar typically mounts ConfigMaps with the
+                # 'grafana_dashboard: "1"' label to /var/lib/grafana/dashboards/
+                path: /var/lib/grafana/dashboards # This is the directory Grafana will scan
+    # --- END NEW: Dashboard Provisioning Configuration ---
+
+
+
   # Other Grafana configurations
 #  service:
 #    type: ClusterIP
@@ -20,7 +58,6 @@ main:  # Corresponds to the 'alias: main' in Chart.yaml
   datasources:
     datasources.yaml:
       apiVersion: 1
-
       datasources:
         - name: Prometheus
           type: prometheus
@@ -28,7 +65,6 @@ main:  # Corresponds to the 'alias: main' in Chart.yaml
           isDefault: true
           access: proxy
           editable: true
-
         - name: Tempo
           type: tempo
           url: "http://tempo-app.monitoring.svc.cluster.local:3200"

@@ -1,0 +1,16 @@
+# app-gitops-manifests-repo/platform-apps/grafana/templates/dashboards-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "grafana.fullname" . }}-dashboards # Dynamic name based on chart
+  namespace: {{ .Release.Namespace }} # Deploy in the same namespace as Grafana
+  labels:
+    {{- include "grafana.labels" . | nindent 4 }}
+    # This label is crucial for Grafana's sidecar to pick it up
+    grafana_dashboard: "1"
+data:
+  # Iterate over all .json files in the 'dashboards' directory
+  {{- range $path, $bytes := .Files.Glob "dashboards/*.json" }}
+  {{ base $path }}: |-
+    {{ .Files.Get $path | nindent 4 }}
+  {{- end }}
