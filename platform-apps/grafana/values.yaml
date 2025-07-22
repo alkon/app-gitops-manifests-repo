@@ -4,6 +4,13 @@ main: # This 'main' key corresponds to the 'alias: main' in your Chart.yaml for 
   # For production, consider using a Kubernetes Secret and referencing it here,
   # or using a secret management solution like Vault.
 
+  # --- Grafana Image Configuration ---
+  image:
+    repository: grafana/grafana
+    tag: 9.2.10 # Set to the Grafana application version deployed by Helm chart version 9.2.10
+    pullPolicy: IfNotPresent
+  # --- End Grafana Image Configuration ---
+
   # --- Dashboard Provisioning Configuration ---
   # This section enables the Grafana sidecar that watches for dashboard ConfigMaps
   sidecar:
