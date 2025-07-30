@@ -1,0 +1,69 @@
+---
+
+```txt
+## Project: GitOps Application Manifests
+
+This repo contains GitOps-style Helm charts for platform observability and support apps. Deployed via Argo CD using `argocd_app` Terraform modules.
+
+### Subdirectories (`platform-apps/`)
+
+- `cert-manager`: for TLS certificates and validating Argo CD webhooks (required for production Argo CD setups)
+- `flask-simulator`: sends `curl`-like requests to the Flask app’s `/checkout` to simulate load and errors
+- `otel-operator`: deploys the OpenTelemetry Operator
+- `otel-config`: sets up auto-instrumentation injection rules
+- `otel-collector`: collects metrics, logs, and traces from the app
+- `thanos-query` / `thanos-receiver`: metrics backend (Prometheus-compatible)
+- `tempo`: backend for span traces
+- `grafana`: includes dashboards for metrics, traces, and RED analysis
+  - JSON files inside `grafana/dashboards/` define the visual layouts
+
+### Simulation Behavior
+
+The `flask-simulator` app triggers calls to a Flask endpoint (`/checkout`) that behaves differently over time:
+- Normal: 50–150ms latency, 5% failure rate
+- Peak: 1800–2500ms latency, 70% failure rate, triggered every 1–3 minutes for 30s
+
+This behavior is ideal for monitoring with:
+- RED metrics (Thanos)
+- Long spans (Tempo)
+- Dashboards (Grafana)
+- Exemplars (future integration)
+
+### Integration
+
+This repo is intended to be consumed by:
+- Terraform modules (`argocd_app`)
+- Argo CD with GitHub source
+- GitMCP/Claude/Cursor agents
+
+### Goals
+
+- Modular and declarative GitOps setup
+- Push-button simulation of latency and errors
+- Trace/metric/dashboards managed entirely via Git
+
+### Thanos Chart Challenges
+
+We originally intended to use the Bitnami Thanos Helm chart:
+
+- Version: 15.14.1
+- Source: `oci://registry-1.docker.io/bitnamicharts/thanos`
+
+However, the online OCI chart failed to install properly in CI and Argo CD pipelines.
+
+As a workaround:
+- The full chart was downloaded and **stored locally** in the repo
+- We built separate chart structures under:
+  - `platform-apps/thanos-receiver`
+  - `platform-apps/thanos-query`
+
+This is not considered good practice:
+- It duplicates Bitnami's internal structure
+- Creates maintainability issues and versioning confusion
+- Lacks alignment with future Bitnami or Grafana enhancements
+
+We are evaluating two options:
+1. Fix Bitnami chart usage via OCI + Argo CD
+2. Replace it entirely with a community-supported chart (e.g., thanos-io or kube-thanos)
+
+This impacts our goal to enable **Grafana exemplars** and trace ↔ metrics navigation.

@@ -31,6 +31,7 @@ opentelemetry-collector:
             default: GET
           - name: http.status_code
         metrics_flush_interval: 15s
+        exemplars: {}
 
     processors:
       batch: {}
