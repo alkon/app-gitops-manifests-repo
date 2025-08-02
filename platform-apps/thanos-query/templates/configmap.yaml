@@ -1,0 +1,11 @@
+# thanos-query/templates/thanos-objstore-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: thanos-objstore-config
+  namespace: {{ .Values.query.global.namespace }}
+  labels:
+    {{- include "thanos-query-app.labels" . | nindent 4 }}
+data:
+  objstore.yml: |-
+{{ .Values.query.objstoreConfig | nindent 4 }}
