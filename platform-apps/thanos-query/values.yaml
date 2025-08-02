@@ -3,75 +3,7 @@ query:
   global:
     namespace: thanos-ns
   
-  # Enable only query component
-  query:
-    enabled: true
-    
-    # Resource configuration
-    resources:
-      limits:
-        memory: 2Gi
-        cpu: 1000m
-      requests:
-        memory: 512Mi
-        cpu: 250m
-    
-    # Enable exemplars support
-    extraFlags:
-      - --query.enable-exemplars
-      - --query.auto-downsampling
-      - --query.replica-label=replica
-      - --query.replica-label=prometheus_replica
-    
-    # Service configuration
-    service:
-      type: ClusterIP
-      ports:
-        http: 9090
-        grpc: 10901
-    
-    # Configure store endpoints
-    # These should point to your Thanos receiver, sidecar, and store gateway services
-    stores:
-      - thanos-receiver-app-receiver:10901
-      # Add more stores as needed
-      # - prometheus-thanos-sidecar:10901
-      # - thanos-store-gateway:10901
-    
-    # Query Frontend for caching and splitting
-    frontend:
-      enabled: true
-      
-    # Auto-scaling configuration
-    autoscaling:
-      enabled: false
-      minReplicas: 1
-      maxReplicas: 3
-      targetCPU: 80
-      targetMemory: 80
-  
-  # Enable query frontend for better performance
-  queryFrontend:
-    enabled: true
-    resources:
-      limits:
-        memory: 1Gi
-        cpu: 500m
-      requests:
-        memory: 256Mi
-        cpu: 100m
-    
-    # Cache configuration
-    config: |
-      type: IN-MEMORY
-      config:
-        max_size: 250MB
-        max_size_items: 0
-        validity: 10m
-  
   # Disable other components
-  bucketweb:
-    enabled: false
   compactor:
     enabled: false
   storegateway:
@@ -80,28 +12,97 @@ query:
     enabled: false
   receive:
     enabled: false
+  bucketweb:
+    enabled: false
   receiveDistributor:
     enabled: false
-  
-  # Object store configuration (using filesystem for simplicity)
-  # In production, configure S3, GCS, or Azure
-  objstoreConfig: |
-    type: FILESYSTEM
-    config:
-      directory: "/data/objstore"
-  
-  # Common configuration
-  image:
-    registry: docker.io
-    repository: bitnami/thanos
-    tag: 0.39.1-debian-12-r0
-    pullPolicy: IfNotPresent
-  
-  # Monitoring
-  metrics:
+
+  # Enable query component
+  query:
     enabled: true
-    serviceMonitor:
+
+    # Resource configuration
+    resources:
+      limits:
+        memory: 2Gi
+        cpu: 1000m
+      requests:
+        memory: 512Mi
+        cpu: 250m
+
+    # Extra flags for the thanos query command
+    extraFlags:
+      - --query.enable-exemplars
+      - --query.auto-downsampling
+      - --query.replica-label=replica
+      - --query.replica-label=prometheus_replica
+
+    # Service configuration
+    service:
+      type: ClusterIP
+      ports:
+        http: 9090
+        grpc: 10901
+
+    # Configure store endpoints
+    # These should point to your Thanos receiver, sidecar, and store gateway services.
+    # The format is <service-name>:<port>
+    stores:
+      - thanos-receiver-app-receiver:10901
+      # Add more stores as needed, e.g.:
+      # - prometheus-thanos-sidecar:10901
+      # - thanos-store-gateway:10901
+
+    # The `frontend` block is not a standard configuration path.
+    # Use the top-level `queryFrontend` block instead.
+
+    # Auto-scaling configuration
+    autoscaling:
       enabled: false
-      namespace: thanos-ns
-      labels:
-        release: prometheus
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPU: 80
+      targetMemory: 80
+
+# Enable query frontend for caching and splitting
+queryFrontend:
+  enabled: true
+  resources:
+    limits:
+      memory: 1Gi
+      cpu: 500m
+    requests:
+      memory: 256Mi
+      cpu: 100m
+
+  # Cache configuration is passed via a flag in the `extraFlags` section
+  extraFlags:
+    - |
+      --query-range.response-cache-config=type: IN-MEMORY
+      config:
+        max_size: 250MB
+        max_size_items: 0
+        validity: 10m
+
+# Object store configuration (using filesystem for simplicity)
+# In production, configure S3, GCS, or Azure.
+objstoreConfig: |
+  type: FILESYSTEM
+  config:
+    directory: "/data/objstore"
+
+# Common configuration
+image:
+  registry: docker.io
+  repository: bitnami/thanos
+  tag: 0.39.1-debian-12-r0
+  pullPolicy: IfNotPresent
+
+# Monitoring
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: false
+    namespace: thanos-ns
+    labels:
+      release: prometheus

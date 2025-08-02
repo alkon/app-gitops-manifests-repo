@@ -22,8 +22,9 @@ receiver:
   # Enable receive component
   receive:
     enabled: true
-    mode: "standalone"
-    
+    # The 'mode' field is not a standard value in the Bitnami chart.
+    # The chart implicitly runs in 'standalone' mode with a single replica.
+
     # Resource configuration
     resources:
       limits:
@@ -32,19 +33,18 @@ receiver:
       requests:
         memory: 512Mi
         cpu: 250m
-    
-    # Enable exemplars support
+
+    # Extra flags for the thanos receive command
     extraFlags:
-      - --receive.exemplars=on
-      - --tsdb.max-exemplars=100000
+      - --tsdb.max-exemplars=100000  # Correct flag for enabling exemplars
       - --tsdb.retention=2d
-    
+
     # Persistence configuration
     persistence:
       enabled: true
       storageClass: "standard"
       size: 10Gi
-    
+
     # Service configuration
     service:
       type: ClusterIP
@@ -52,10 +52,10 @@ receiver:
         http: 10902
         grpc: 10901
         remote: 19291
-    
+
     # Configure for remote write endpoint
     replicaLabel: replica
-    
+
     # Auto-scaling configuration
     autoscaling:
       enabled: false
@@ -63,9 +63,9 @@ receiver:
       maxReplicas: 3
       targetCPU: 80
       targetMemory: 80
-  
+
   # Object store configuration (using filesystem for simplicity)
-  # In production, configure S3, GCS, or Azure
+  # In production, this should be an external object store like S3 or GCS.
   objstoreConfig: |
     type: FILESYSTEM
     config:
