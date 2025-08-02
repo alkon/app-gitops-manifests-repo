@@ -1,0 +1,5 @@
+helm:
+  releaseName: thanos-query
+  skipCrds: false
+  skipSchemaValidation: false
+  passCredentials: false

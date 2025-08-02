@@ -1,0 +1,5 @@
+helm:
+  releaseName: thanos-receiver
+  skipCrds: false
+  skipSchemaValidation: false
+  passCredentials: false
