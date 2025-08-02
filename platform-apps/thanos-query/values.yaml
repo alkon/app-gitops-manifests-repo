@@ -101,7 +101,7 @@ query:
   metrics:
     enabled: true
     serviceMonitor:
-      enabled: true
+      enabled: false
       namespace: thanos-ns
       labels:
         release: prometheus
