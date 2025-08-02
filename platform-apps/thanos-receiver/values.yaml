@@ -1,14 +1,10 @@
-# Note: The object store configuration is a top-level parameter in the Helm chart,
-# so it is not nested under the 'receiver' component.
-
-# Use an existing secret for the object store configuration
-# This secret will contain the objstore.yml file
-existingObjstoreSecret: thanos-objstore-config
-existingObjstoreSecretItems:
-  - key: objstore.yml
-    path: objstore.yml
-
 receiver:
+  # The objstore configuration is now nested under the 'receiver' alias
+  existingObjstoreSecret: thanos-objstore-config
+  existingObjstoreSecretItems:
+    - key: objstore.yml
+      path: objstore.yml
+
   # Global settings
   global:
     namespace: thanos-ns
@@ -32,6 +28,13 @@ receiver:
   # Enable receive component
   receive:
     enabled: true
+
+    # Service Account configuration for IRSA
+    serviceAccount:
+      create: true
+      name: thanos-receiver-sa
+      annotations:
+        eks.amazonaws.com/role-arn: "arn:aws:iam::841162669220:role/thanos-receiver-role" # <-- You MUST replace this with your actual AWS account ID
 
     # Resource configuration
     resources:
