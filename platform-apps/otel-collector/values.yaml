@@ -85,7 +85,6 @@ opentelemetry-collector:
         resource_to_telemetry_conversion:
           enabled: true
         send_metadata: true
-        enable_open_metrics: true
 
       debug:
         verbosity: detailed
