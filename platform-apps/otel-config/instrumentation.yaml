@@ -31,8 +31,20 @@ spec:
       - name: OTEL_EXPORTER_OTLP_PROTOCOL
         value: "grpc"
       - name: OTEL_RESOURCE_ATTRIBUTES
-        value: "deployment.environment=k8s"
+        value: "deployment.environment=k8s,service.name=flask-app,service.version=1.0.0"
       - name: OTEL_LOG_LEVEL
         value: "DEBUG"  # or INFO or WARN; controls output verbosity
       - name: OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED
         value: "true"
+      - name: OTEL_METRICS_EXEMPLAR_FILTER
+        value: "TraceBased"
+      - name: OTEL_PYTHON_EXPERIMENTAL_DISABLE_METRICS_EXPORT
+        value: "false"
+      - name: OTEL_SPAN_ATTRIBUTE_COUNT_LIMIT
+        value: "128"
+      - name: OTEL_SPAN_EVENT_COUNT_LIMIT
+        value: "128"
+      - name: OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SERVER_REQUEST
+        value: "x-request-id,user-agent"
+      - name: OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SERVER_RESPONSE
+        value: "content-type"

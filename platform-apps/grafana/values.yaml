@@ -7,7 +7,7 @@ main: # This 'main' key corresponds to the 'alias: main' in your Chart.yaml for 
   # --- Grafana Image Configuration ---
   image:
     repository: grafana/grafana
-    tag: 12.0.2 # Set to the Grafana application version deployed by Helm chart version 9.2.10
+    tag: 12.1.0 # Set to the Grafana application version deployed by Helm chart version 9.3.0
     pullPolicy: IfNotPresent
   # --- End Grafana Image Configuration ---
 
@@ -62,8 +62,14 @@ main: # This 'main' key corresponds to the 'alias: main' in your Chart.yaml for 
           isDefault: true
           access: proxy
           editable: true
+          jsonData:
+            httpMethod: POST
+            exemplarTraceIdDestinations:
+              - datasourceUid: tempo
+                name: traceID
         - name: Tempo
           type: tempo
+          uid: tempo
           url: "http://tempo-app.monitoring.svc.cluster.local:3200"
           isDefault: false
           access: proxy

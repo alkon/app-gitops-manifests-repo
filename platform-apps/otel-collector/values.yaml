@@ -25,13 +25,28 @@ opentelemetry-collector:
       spanmetrics:  # Connector that converts spans to RED metrics
         histogram:
           explicit:
-            buckets: [100us, 1ms, 10ms, 50ms, 100ms, 250ms, 500ms, 1s]
+            buckets: [100us, 1ms, 2ms, 6ms, 10ms, 50ms, 100ms, 250ms, 500ms, 1s, 2s]
         dimensions:
           - name: http.method
             default: GET
           - name: http.status_code
+          - name: service.name
+          - name: http.route
+        dimensions_cache_size: 1000
+        aggregation_temporality: "AGGREGATION_TEMPORALITY_CUMULATIVE"
         metrics_flush_interval: 15s
-        exemplars: {}
+        metrics_expiration: 5m
+        exemplars:
+          enabled: true
+        events:
+          enabled: true
+          dimensions:
+            - name: exception.type
+            - name: exception.message
+        resource_metrics_key_attributes:
+          - service.name
+          - telemetry.sdk.language
+          - telemetry.sdk.name
 
     processors:
       batch: {}
@@ -69,6 +84,8 @@ opentelemetry-collector:
           insecure_skip_verify: true
         resource_to_telemetry_conversion:
           enabled: true
+        send_metadata: true
+        enable_open_metrics: true
 
       debug:
         verbosity: detailed

@@ -76,7 +76,14 @@
               }
             ]
           },
-          "unit": "ms"
+          "unit": "ms",
+          "links": [
+            {
+              "title": "View Traces",
+              "url": "/explore?orgId=1&left={\"datasource\":\"tempo\",\"queries\":[{\"query\":\"${__data.fields.traceID}\",\"queryType\":\"\",\"refId\":\"A\"}],\"range\":{\"from\":\"${__from}\",\"to\":\"${__to}\"}}",
+              "targetBlank": true
+            }
+          ]
         },
         "overrides": []
       },
@@ -102,7 +109,8 @@
           "editorMode": "builder",
           "expr": "histogram_quantile(0.95, sum(rate(traces_span_metrics_duration_milliseconds_bucket{span_name=~\"GET /checkout\"}[5m])) by (le))",
           "legendFormat": "P95 Latency",
-          "refId": "A"
+          "refId": "A",
+          "exemplar": true
         }
       ],
       "title": "P95 Latency - GET /checkout",
@@ -223,7 +231,8 @@
           "editorMode": "builder",
           "expr": "rate(traces_span_metrics_calls_total{span_name=~\"GET /checkout\"}[5m])",
           "legendFormat": "{{instance}} Request Rate",
-          "refId": "A"
+          "refId": "A",
+          "exemplar": true
         }
       ],
       "title": "Request Rate - GET /checkout",
@@ -309,6 +318,7 @@
           "editorMode": "builder",
           "expr": "rate(traces_span_metrics_calls_total{span_name=~\"GET /checkout\", status_code=\"STATUS_CODE_ERROR\"}[5m])",
           "legendFormat": "{{instance}} Error Rate",
+          "exemplar": true,
           "refId": "A"
         }
       ],
