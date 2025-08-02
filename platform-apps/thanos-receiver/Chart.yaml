@@ -12,5 +12,6 @@ sources:
 dependencies:
   - name: thanos
     version: "17.2.3"
-    repository: "https://charts.bitnami.com/bitnami"
+#    repository: "https://charts.bitnami.com/bitnami"
+    repository: "oci://registry-1.docker.io/bitnamicharts"
     alias: receiver
