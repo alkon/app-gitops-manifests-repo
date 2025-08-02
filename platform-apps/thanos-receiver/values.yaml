@@ -34,7 +34,7 @@ receiver:
       create: true
       name: thanos-receiver-sa
       annotations:
-        eks.amazonaws.com/role-arn: "arn:aws:iam::841162669220:role/thanos-receiver-role" # <-- You MUST replace this with your actual AWS account ID
+        eks.amazonaws.com/role-arn: "arn:aws:iam::841162669220:role/thanos-receiver-local-role"
 
     # Resource configuration
     resources:
