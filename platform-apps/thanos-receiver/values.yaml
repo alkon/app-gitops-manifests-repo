@@ -1,8 +1,18 @@
+# Note: The object store configuration is a top-level parameter in the Helm chart,
+# so it is not nested under the 'receiver' component.
+
+# Use an existing secret for the object store configuration
+# This secret will contain the objstore.yml file
+existingObjstoreSecret: thanos-objstore-config
+existingObjstoreSecretItems:
+  - key: objstore.yml
+    path: objstore.yml
+
 receiver:
   # Global settings
   global:
     namespace: thanos-ns
-  
+
   # Disable all components except receive
   query:
     enabled: false
@@ -18,12 +28,10 @@ receiver:
     enabled: false
   receiveDistributor:
     enabled: false
-  
+
   # Enable receive component
   receive:
     enabled: true
-    # The 'mode' field is not a standard value in the Bitnami chart.
-    # The chart implicitly runs in 'standalone' mode with a single replica.
 
     # Resource configuration
     resources:
@@ -65,13 +73,6 @@ receiver:
       maxReplicas: 3
       targetCPU: 80
       targetMemory: 80
-
-  # Object store configuration (using filesystem for simplicity)
-  # In production, this should be an external object store like S3 or GCS.
-  objstoreConfig: |
-    type: FILESYSTEM
-    config:
-      directory: "/data/objstore"
   
   # Common configuration
   image:
