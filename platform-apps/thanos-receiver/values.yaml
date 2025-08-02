@@ -34,10 +34,12 @@ receiver:
         memory: 512Mi
         cpu: 250m
 
+    tsdb:
+      retention: 2d # how long to retain raw samples on the local storage
+
     # Extra flags for the thanos receive command
     extraFlags:
       - --tsdb.max-exemplars=100000  # Correct flag for enabling exemplars
-      - --tsdb.retention=2d
 
     # Persistence configuration
     persistence:
