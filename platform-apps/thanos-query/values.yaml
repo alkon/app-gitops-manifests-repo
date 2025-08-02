@@ -32,7 +32,6 @@ query:
 
     # Extra flags for the thanos query command
     extraFlags:
-      - --query.enable-exemplars
       - --query.auto-downsampling
       - --query.replica-label=replica
       - --query.replica-label=prometheus_replica
