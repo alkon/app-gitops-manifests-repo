@@ -1,11 +1,11 @@
 apiVersion: v2
 name: sealed-secrets-controller
-description: A Helm chart for deploying the Sealed Secrets controller
+description: A Helm wrapper chart for deploying the Bitnami Sealed Secrets controller
 type: application
 version: 0.1.0 # Version of your wrapper chart
 appVersion: "0.30.0" # The version of the Sealed Secrets controller being deployed
 
 dependencies:
   - name: sealed-secrets
-    version: 2.5.16 # Using the latest chart version found in the OCI registry
-    repository: oci://registry-1.docker.io/bitnamicharts
+    version: 2.17.3 # Use the latest stable version of the Bitnami sealed-secrets chart
+    repository: https://bitnami-labs.github.io/sealed-secrets
