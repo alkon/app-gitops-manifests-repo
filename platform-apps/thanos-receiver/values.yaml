@@ -97,7 +97,8 @@ receiver:
         # Add other S3 specific configs if needed, e.g., insecure: true, signature_version2: false
 
   # Define the volume for the object storage configuration ConfigMap (MOVED HERE)
-  extraVolumes: # MOVED from top-level to under 'receiver'
+  # This block should be at the same level as 'receive', 'image', 'metrics', etc.
+  extraVolumes:
     - name: objstore-config
       configMap:
         name: {{ include "thanos-receiver-app.fullname" . }}-objstore-config
