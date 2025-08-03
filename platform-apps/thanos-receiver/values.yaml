@@ -87,16 +87,16 @@ receiver:
         mountPath: /etc/thanos/objstore.yml
         subPath: objstore.yml # Mounts only the file, not the directory
 
-  # Define the object storage configuration structure here
-  objstore:
-    type: S3
-    config:
-      bucket: alkon-thanos-metrics-dev
-      endpoint: s3.amazonaws.com
-      region: us-east-1
-      # Add other S3 specific configs if needed, e.g., insecure: true, signature_version2: false
+    # Define the object storage configuration structure here, nested under 'receive'
+    objstore:
+      type: S3
+      config:
+        bucket: alkon-thanos-metrics-dev
+        endpoint: s3.amazonaws.com
+        region: us-east-1
+        # Add other S3 specific configs if needed, e.g., insecure: true, signature_version2: false
 
-  # Common configuration
+  # Common configuration (this section remains at the top level)
   image:
     registry: docker.io
     repository: bitnami/thanos
@@ -112,7 +112,7 @@ receiver:
       labels:
         release: prometheus
 
-# Define the volume for the object storage configuration ConfigMap
+# Define the volume for the object storage configuration ConfigMap (this section remains at the top level)
 extraVolumes:
   - name: objstore-config
     configMap:
