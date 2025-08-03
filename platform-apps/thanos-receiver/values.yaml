@@ -96,8 +96,9 @@ receiver:
         region: us-east-1
         # Add other S3 specific configs if needed, e.g., insecure: true, signature_version2: false
 
-  # Define the volume for the object storage configuration ConfigMap (MOVED HERE)
-  # This block should be at the same level as 'receive', 'image', 'metrics', etc.
+  # Define the volume for the object storage configuration ConfigMap
+  # This block must be at the same level as 'receive', 'image', 'metrics', etc.,
+  # directly under the 'receiver' alias.
   extraVolumes:
     - name: objstore-config
       configMap:
