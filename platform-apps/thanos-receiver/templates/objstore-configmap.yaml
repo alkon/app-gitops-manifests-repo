@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: thanos-receiver-objstore-config # This name must match extraVolumes.configMap.name in values.yaml
+  namespace: thanos-ns # This must match the namespace where Thanos Receiver is deployed
+  labels:
+    app.kubernetes.io/name: thanos-receiver
+    app.kubernetes.io/instance: thanos-receiver-app # Adjust based on your ArgoCD instance name
+data:
+  objstore.yml: |
+    type: S3
+    config:
+      bucket: alkon-thanos-metrics-dev
+      endpoint: s3.amazonaws.com
+      region: us-east-1
+      # Add other S3 specific configs here if needed, e.g., insecure: true, signature_version2: false

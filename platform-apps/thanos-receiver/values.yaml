@@ -39,22 +39,13 @@ receiver:
         cpu: 250m
 
     tsdb:
-      # Only one retention line, as duplicate keys cause YAML parsing errors.
       retention: 2d # how long to retain raw samples on Thanos Receiver's local TSDB
 
     # Extra flags for the thanos receive command
     extraFlags:
       - --tsdb.max-exemplars=100000  # Correct flag for enabling exemplars
-      # Pass S3 object storage configuration directly via flags using a YAML literal block scalar.
-      # IMPORTANT: The content below the '|' MUST be indented by at least 2 spaces
-      # relative to the line containing '--objstore.config=|'.
-#      - --objstore.config=|
-#          type: S3
-#          config:
-#            bucket: alkon-thanos-metrics-dev
-#            endpoint: s3.amazonaws.com
-#            region: us-east-1
-      # Make sure 'alkon-thanos-metrics-dev' and 'us-east-1' match your actual bucket name and region.
+      # Point Thanos to the mounted object storage configuration file from the ConfigMap
+      - --objstore.config-file=/etc/thanos/objstore.yml
 
     # Persistence configuration
     persistence:
@@ -86,14 +77,28 @@ receiver:
       - secretRef:
           name: aws-creds # Name of the Secret created by Sealed Secrets
 
-  # Common configuration (this section remains at the top level of 'receiver')
+    # Volume mounts for the object storage configuration file
+    extraVolumeMounts:
+      - name: objstore-config
+        mountPath: /etc/thanos/objstore.yml
+        subPath: objstore.yml # Mounts only the file, not the directory
+
+  # Define the volume for the object storage configuration ConfigMap
+  # This block must be at the same level as 'receive', 'image', 'metrics', etc.,
+  # directly under the 'receiver' alias.
+  extraVolumes:
+    - name: objstore-config
+      configMap:
+        name: thanos-receiver-objstore-config # This name must match the ConfigMap manifest below
+
+  # Common configuration
   image:
     registry: docker.io
     repository: bitnami/thanos
     tag: 0.39.1-debian-12-r0
     pullPolicy: IfNotPresent
 
-  # Monitoring (this section remains at the top level of 'receiver')
+  # Monitoring
   metrics:
     enabled: true
     serviceMonitor:
