@@ -52,7 +52,8 @@ receiver:
       # Add S3 object storage configuration directly via flags
       # This assumes the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY env vars are set
       # and Thanos will pick them up.
-      - --objstore.config="type: S3, config: {bucket: alkon-thanos-metrics-dev, endpoint: s3.amazonaws.com, region: us-east-1}"
+      # Escaped double quotes are crucial for YAML parsing of the inner string.
+      - --objstore.config="type: S3, config: {\"bucket\": \"alkon-thanos-metrics-dev\", \"endpoint\": \"s3.amazonaws.com\", \"region\": \"us-east-1\"}"
       # Make sure to replace 'thanos-bucket-alex' and 'us-east-1' with your actual bucket name and region.
 
     # Persistence configuration
