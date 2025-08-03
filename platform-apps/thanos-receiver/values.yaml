@@ -48,12 +48,12 @@ receiver:
       # Pass S3 object storage configuration directly via flags using a YAML literal block scalar.
       # IMPORTANT: The content below the '|' MUST be indented by at least 2 spaces
       # relative to the line containing '--objstore.config=|'.
-      - --objstore.config=|
-          type: S3
-          config:
-            bucket: alkon-thanos-metrics-dev
-            endpoint: s3.amazonaws.com
-            region: us-east-1
+#      - --objstore.config=|
+#          type: S3
+#          config:
+#            bucket: alkon-thanos-metrics-dev
+#            endpoint: s3.amazonaws.com
+#            region: us-east-1
       # Make sure 'alkon-thanos-metrics-dev' and 'us-east-1' match your actual bucket name and region.
 
     # Persistence configuration
