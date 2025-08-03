@@ -1,0 +1,2 @@
+# Ignore plaintext AWS credentials
+thanos-receiver/aws-creds.yaml
