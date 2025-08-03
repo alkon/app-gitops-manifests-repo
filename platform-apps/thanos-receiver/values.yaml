@@ -1,9 +1,8 @@
 receiver:
-  # The objstore configuration is now nested under the 'receiver' alias
-  existingObjstoreSecret: thanos-objstore-config
-  existingObjstoreSecretItems:
-    - key: objstore.yml
-      path: objstore.yml
+  # The objstore configuration will now use environment variables
+  # from the 'aws-creds' secret.
+  # We are REMOVING existingObjstoreSecret and existingObjstoreSecretItems
+  # as they are for a different objstore.yml file approach.
 
   # Global settings
   global:
@@ -29,12 +28,11 @@ receiver:
   receive:
     enabled: true
 
-    # Service Account configuration for IRSA
+    # Service Account configuration (removed EKS-specific annotation for k3d)
     serviceAccount:
       create: true
       name: thanos-receiver-sa
-      annotations:
-        eks.amazonaws.com/role-arn: "arn:aws:iam::841162669220:role/thanos-receiver-local-role"
+      # Removed: eks.amazonaws.com/role-arn annotation as it's for EKS IRSA
 
     # Resource configuration
     resources:
@@ -46,11 +44,16 @@ receiver:
         cpu: 250m
 
     tsdb:
-      retention: 2d # how long to retain raw samples on the local storage
+      retention: 2d # how long to retain raw samples on Thanos Receiver Time Series Database (TSDB), that placed localy
 
     # Extra flags for the thanos receive command
     extraFlags:
       - --tsdb.max-exemplars=100000  # Correct flag for enabling exemplars
+      # Add S3 object storage configuration directly via flags
+      # This assumes the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY env vars are set
+      # and Thanos will pick them up.
+      - --objstore.config="type: S3, config: {bucket: alkon-thanos-metrics-dev, endpoint: s3.amazonaws.com, region: us-east-1}"
+      # Make sure to replace 'thanos-bucket-alex' and 'us-east-1' with your actual bucket name and region.
 
     # Persistence configuration
     persistence:
@@ -76,14 +79,19 @@ receiver:
       maxReplicas: 3
       targetCPU: 80
       targetMemory: 80
-  
+
+    # Inject the AWS credentials from the 'aws-creds' Secret as environment variables
+    extraEnvFrom:
+      - secretRef:
+          name: aws-creds # Name of the Secret created by Sealed Secrets
+
   # Common configuration
   image:
     registry: docker.io
     repository: bitnami/thanos
     tag: 0.39.1-debian-12-r0
     pullPolicy: IfNotPresent
-  
+
   # Monitoring
   metrics:
     enabled: true
