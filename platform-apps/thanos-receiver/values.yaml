@@ -1,5 +1,5 @@
 receiver:
-  # The objstore configuration will now be managed via a ConfigMap.
+  # The objstore configuration will now be passed directly via extraFlags
   # We are REMOVING existingObjstoreSecret and existingObjstoreSecretItems
   # as they are for a different objstore.yml file approach.
 
@@ -48,8 +48,15 @@ receiver:
     # Extra flags for the thanos receive command
     extraFlags:
       - --tsdb.max-exemplars=100000  # Correct flag for enabling exemplars
-      # Point Thanos to the mounted object storage configuration file
-      - --objstore.config-file=/etc/thanos/objstore.yml
+      # Pass S3 object storage configuration directly via flags using a YAML literal block scalar.
+      # This is the most robust way to pass multi-line YAML as a single string to a flag.
+      - --objstore.config=|
+          type: S3
+          config:
+            bucket: alkon-thanos-metrics-dev
+            endpoint: s3.amazonaws.com
+            region: us-east-1
+      # Make sure to replace 'alkon-thanos-metrics-dev' and 'us-east-1' with your actual bucket name and region.
 
     # Persistence configuration
     persistence:
@@ -81,37 +88,35 @@ receiver:
       - secretRef:
           name: aws-creds # Name of the Secret created by Sealed Secrets
 
-    # Volume mounts for the object storage configuration file
-    extraVolumeMounts:
-      - name: objstore-config
-        mountPath: /etc/thanos/objstore.yml
-        subPath: objstore.yml # Mounts only the file, not the directory
+    # Commented out: Volume mounts for the object storage configuration file
+    # extraVolumeMounts:
+    #   - name: objstore-config
+    #     mountPath: /etc/thanos/objstore.yml
+    #     subPath: objstore.yml # Mounts only the file, not the directory
 
-    # Define the object storage configuration structure here, nested under 'receive'
-    objstore:
-      type: S3
-      config:
-        bucket: alkon-thanos-metrics-dev
-        endpoint: s3.amazonaws.com
-        region: us-east-1
-        # Add other S3 specific configs if needed, e.g., insecure: true, signature_version2: false
+    # Commented out: Define the object storage configuration structure here, nested under 'receive'
+    # objstore:
+    #   type: S3
+    #   config:
+    #     bucket: alkon-thanos-metrics-dev
+    #     endpoint: s3.amazonaws.com
+    #     region: us-east-1
+    #     # Add other S3 specific configs if needed, e.g., insecure: true, signature_version2: false
 
-  # Define the volume for the object storage configuration ConfigMap
-  # This block must be at the same level as 'receive', 'image', 'metrics', etc.,
-  # directly under the 'receiver' alias.
-  extraVolumes:
-    - name: objstore-config
-      configMap:
-        name: {{ include "thanos-receiver-app.fullname" . }}-objstore-config
+  # Commented out: Define the volume for the object storage configuration ConfigMap
+  # extraVolumes:
+  #   - name: objstore-config
+  #     configMap:
+  #       name: {{ include "thanos-receiver-app.fullname" . }}-objstore-config
 
-  # Common configuration (this section remains at the top level of 'receiver')
+  # Common configuration
   image:
     registry: docker.io
     repository: bitnami/thanos
     tag: 0.39.1-debian-12-r0
     pullPolicy: IfNotPresent
 
-  # Monitoring (this section remains at the top level of 'receiver')
+  # Monitoring
   metrics:
     enabled: true
     serviceMonitor:
