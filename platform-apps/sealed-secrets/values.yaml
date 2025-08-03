@@ -1,0 +1,29 @@
+# Default values for sealed-secrets-controller.
+# This file is for overriding values of the upstream sealed-secrets chart.
+
+sealed-secrets:
+  # You can uncomment and modify these if you need specific changes.
+  # For most cases, the defaults are sufficient.
+
+  # replicaCount: 1
+  # image:
+  #   registry: ghcr.io
+  #   repository: bitnami-labs/sealed-secrets-controller
+  #   tag: v0.30.0 # Updated to match the latest appVersion
+  #   pullPolicy: IfNotPresent
+
+  # service:
+  #   type: ClusterIP
+  #   port: 8080
+
+  # resources:
+  #   limits:
+  #     cpu: 100m
+  #     memory: 128Mi
+  #   requests:
+  #     cpu: 50m
+  #     memory: 64Mi
+
+  # affinity: {}
+  # tolerations: []
+  # nodeSelector: {}
