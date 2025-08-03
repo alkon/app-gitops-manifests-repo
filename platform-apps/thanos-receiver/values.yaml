@@ -80,8 +80,6 @@ receiver:
     # Extra flags for the thanos receive command
     extraFlags:
       - --tsdb.max-exemplars=100000  # Correct flag for enabling exemplars
-      # Point Thanos to the mounted object storage configuration file from the ConfigMap
-      - --objstore.config-file=/etc/thanos/objstore.yml
 
     # Persistence configuration
     persistence:
@@ -110,18 +108,6 @@ receiver:
 
     # Inject the AWS credentials from the 'aws-creds' Secret as environment variables
     extraEnvVarsSecret: aws-creds
-
-    # Volume mounts for the object storage configuration file
-    extraVolumeMounts:
-      - name: objstore-config
-        mountPath: /etc/thanos/objstore.yml
-        subPath: objstore.yml # Mounts only the file, not the directory
-
-    # Define the volume for the object storage configuration ConfigMap
-    extraVolumes:
-      - name: objstore-config
-        configMap:
-          name: thanos-receiver-objstore-config # This name must match the ConfigMap manifest below
 
   # Common configuration
   image:
