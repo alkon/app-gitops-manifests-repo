@@ -2,9 +2,6 @@ receiver:
   # Global settings
   global:
     namespace: thanos-ns
-  
-  # Object storage configuration for components that need it
-  existingObjstoreSecret: thanos-objstore-secret
 
   # Disable all components except receive
   query:
@@ -14,40 +11,7 @@ receiver:
   bucketweb:
     enabled: false
   compactor:
-    enabled: true
-    
-    # Retention configuration per resolution
-    retentionResolutionRaw: 7d     # Keep raw data for 7 days
-    retentionResolution5m: 30d     # Keep 5-minute downsampled data for 30 days  
-    retentionResolution1h: 90d     # Keep 1-hour downsampled data for 90 days
-    
-    # Resource configuration
-    resources:
-      limits:
-        memory: 2Gi
-        cpu: 500m
-      requests:
-        memory: 512Mi
-        cpu: 100m
-    
-    # Persistence for temporary data during compaction
-    persistence:
-      enabled: true
-      storageClass: "standard"
-      size: 10Gi
-    
-    # Service Account
-    serviceAccount:
-      create: true
-      name: thanos-compactor-sa
-    
-    # Extra flags
-    extraFlags:
-      - --compact.concurrency=1
-      - --delete-delay=48h
-    
-    # Use same AWS credentials
-    extraEnvVarsSecret: aws-creds
+    enabled: false
   storegateway:
     enabled: false
   ruler:
@@ -80,6 +44,7 @@ receiver:
     # Extra flags for the thanos receive command
     extraFlags:
       - --tsdb.max-exemplars=100000  # Correct flag for enabling exemplars
+      - --objstore.config-file=/etc/thanos/objstore.yml
 
     # Persistence configuration
     persistence:
@@ -108,6 +73,18 @@ receiver:
 
     # Inject the AWS credentials from the 'aws-creds' Secret as environment variables
     extraEnvVarsSecret: aws-creds
+
+    # Volume mounts for the object storage configuration file
+    extraVolumeMounts:
+      - name: objstore-config
+        mountPath: /etc/thanos/objstore.yml
+        subPath: objstore.yml
+
+    # Define the volume for the object storage configuration ConfigMap
+    extraVolumes:
+      - name: objstore-config
+        configMap:
+          name: thanos-receiver-objstore-config
 
   # Common configuration
   image:
