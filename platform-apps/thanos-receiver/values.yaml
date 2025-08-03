@@ -38,8 +38,8 @@ receiver:
         memory: 512Mi
         cpu: 250m
 
-    tsdb:
-      retention: 2d # how long to retain raw samples on Thanos Receiver's local TSDB
+    # TSDB retention - how long to retain raw samples on Thanos Receiver's local TSDB
+    tsdbRetention: 2d
 
     # Extra flags for the thanos receive command
     extraFlags:
@@ -73,9 +73,7 @@ receiver:
       targetMemory: 80
 
     # Inject the AWS credentials from the 'aws-creds' Secret as environment variables
-    extraEnvFrom:
-      - secretRef:
-          name: aws-creds # Name of the Secret created by Sealed Secrets
+    extraEnvVarsSecret: aws-creds
 
     # Volume mounts for the object storage configuration file
     extraVolumeMounts:
@@ -83,13 +81,11 @@ receiver:
         mountPath: /etc/thanos/objstore.yml
         subPath: objstore.yml # Mounts only the file, not the directory
 
-  # Define the volume for the object storage configuration ConfigMap
-  # This block must be at the same level as 'receive', 'image', 'metrics', etc.,
-  # directly under the 'receiver' alias.
-  extraVolumes:
-    - name: objstore-config
-      configMap:
-        name: thanos-receiver-objstore-config # This name must match the ConfigMap manifest below
+    # Define the volume for the object storage configuration ConfigMap
+    extraVolumes:
+      - name: objstore-config
+        configMap:
+          name: thanos-receiver-objstore-config # This name must match the ConfigMap manifest below
 
   # Common configuration
   image:

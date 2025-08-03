@@ -13,4 +13,6 @@ data:
       bucket: alkon-thanos-metrics-dev
       endpoint: s3.amazonaws.com
       region: us-east-1
-      # Add other S3 specific configs here if needed, e.g., insecure: true, signature_version2: false
+      aws_sdk_auth: true
+      insecure: false
+      signature_version2: false
