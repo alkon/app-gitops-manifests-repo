@@ -1,0 +1,12 @@
+{{- if .Values.receiver.objstore }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "thanos-receiver-app.fullname" . }}-objstore-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "thanos-receiver-app.labels" . | nindent 4 }}
+data:
+  objstore.yml: |
+    {{- toYaml .Values.receiver.objstore | nindent 4 }}
+{{- end }}

@@ -1,6 +1,5 @@
 receiver:
-  # The objstore configuration will now use environment variables
-  # from the 'aws-creds' secret.
+  # The objstore configuration will now be managed via a ConfigMap.
   # We are REMOVING existingObjstoreSecret and existingObjstoreSecretItems
   # as they are for a different objstore.yml file approach.
 
@@ -49,12 +48,8 @@ receiver:
     # Extra flags for the thanos receive command
     extraFlags:
       - --tsdb.max-exemplars=100000  # Correct flag for enabling exemplars
-      # Add S3 object storage configuration directly via flags
-      # This assumes the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY env vars are set
-      # and Thanos will pick them up.
-      # Escaped double quotes are crucial for YAML parsing of the inner string.
-      - --objstore.config="type: S3, config: {\"bucket\": \"alkon-thanos-metrics-dev\", \"endpoint\": \"s3.amazonaws.com\", \"region\": \"us-east-1\"}"
-      # Make sure to replace 'thanos-bucket-alex' and 'us-east-1' with your actual bucket name and region.
+      # Point Thanos to the mounted object storage configuration file
+      - --objstore.config-file=/etc/thanos/objstore.yml
 
     # Persistence configuration
     persistence:
@@ -86,6 +81,21 @@ receiver:
       - secretRef:
           name: aws-creds # Name of the Secret created by Sealed Secrets
 
+    # Volume mounts for the object storage configuration file
+    extraVolumeMounts:
+      - name: objstore-config
+        mountPath: /etc/thanos/objstore.yml
+        subPath: objstore.yml # Mounts only the file, not the directory
+
+  # Define the object storage configuration structure here
+  objstore:
+    type: S3
+    config:
+      bucket: alkon-thanos-metrics-dev
+      endpoint: s3.amazonaws.com
+      region: us-east-1
+      # Add other S3 specific configs if needed, e.g., insecure: true, signature_version2: false
+
   # Common configuration
   image:
     registry: docker.io
@@ -101,3 +111,9 @@ receiver:
       namespace: thanos-ns
       labels:
         release: prometheus
+
+# Define the volume for the object storage configuration ConfigMap
+extraVolumes:
+  - name: objstore-config
+    configMap:
+      name: {{ include "thanos-receiver-app.fullname" . }}-objstore-config
