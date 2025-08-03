@@ -1,29 +1,14 @@
-# Default values for sealed-secrets-controller.
-# This file is for overriding values of the upstream sealed-secrets chart.
+# Default values for the sealed-secrets-controller wrapper chart.
+# These values will be passed to the 'sealed-secrets' sub-chart.
 
 sealed-secrets:
-  # You can uncomment and modify these if you need specific changes.
-  # For most cases, the defaults are sufficient.
+  # Explicitly setting the image tag for the controller to avoid type mismatch errors.
+  image:
+    tag: "0.30.0" # This explicitly sets the image tag for the controller
+    # repository: "bitnami-labs/sealed-secrets-controller" # This is the default, no need to uncomment unless overriding
+    # registry: "ghcr.io" # This is the default, no need to uncomment unless overriding
 
-  # replicaCount: 1
-  # image:
-  #   registry: ghcr.io
-  #   repository: bitnami-labs/sealed-secrets-controller
-  #   tag: v0.30.0 # Updated to match the latest appVersion
-  #   pullPolicy: IfNotPresent
-
-  # service:
-  #   type: ClusterIP
-  #   port: 8080
-
-  # resources:
-  #   limits:
-  #     cpu: 100m
-  #     memory: 128Mi
-  #   requests:
-  #     cpu: 50m
-  #     memory: 64Mi
-
-  # affinity: {}
-  # tolerations: []
-  # nodeSelector: {}
+  # To install the controller in the 'secrets-ns' namespace (as per your main.tf)
+  # ensure the namespace is created, and if the chart has a namespace parameter, set it here.
+  # Otherwise, ArgoCD's destination.namespace will handle it.
+  # namespace: secrets-ns
